@@ -28,7 +28,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     }
 
     componentDidMount() {
-        axios.get<KleppVideoResponse>("https://7395-84-209-167-195.ngrok.io/api/v1/files/").then(res => {
+        axios.get<KleppVideoResponse>("testfiles.json").then(res => {
             this.setState({
                 items: res.data.files
             })
