@@ -1,4 +1,3 @@
-import { Palette } from "@mui/icons-material";
 import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import React from "react"
