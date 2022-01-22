@@ -14,8 +14,8 @@ export default class KleppVideoPlayer extends React.Component<KleppVideoPlayerIt
     render() {
         return (
             <div className="VideoPlayer">
-                <video id="video_el" src={this.props.embedUrl} preload="metadata" height="400px;"
-                    width="400px;" controls/>
+                <video id={this.props.embedUrl} src={this.props.embedUrl} preload="metadata" height="320"
+                    width="100%" controls/>
             </div>
         )
     };
