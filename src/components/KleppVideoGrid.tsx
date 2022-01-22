@@ -28,7 +28,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     }
 
     componentDidMount() {
-        axios.get<KleppVideoResponse>("https://7395-84-209-167-195.ngrok.io/api/v1/files/").then(res => {
+        axios.get<KleppVideoResponse>("testfiles.json").then(res => {
             this.setState({
                 items: res.data.files
             })
@@ -41,8 +41,8 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             .slice(0, 6) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {
                 return (
-                    <Card style={{margin: 10, padding: 10}} variant="outlined">
-                        <Typography variant="body1" style={{margin: 10, padding: 10}}>{item.file_name} </Typography>
+                    <Card style={{ margin: 10, padding: 10 }} variant="outlined">
+                        <Typography variant="body1" style={{ margin: 10, padding: 10 }}>{item.file_name} </Typography>
                         <KleppVideoPlayer embedUrl={item.uri} />
                     </Card>
                 )
@@ -54,8 +54,8 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         return (
             <div>
                 <div className="row">
-                    { this.state.items &&
-                        <Grid container style={{padding: 10}} spacing={2} columns={16}>
+                    {this.state.items &&
+                        <Grid container style={{ padding: 10 }} spacing={2} columns={16}>
                             {this.renderItems()}
                         </Grid >
                     }
