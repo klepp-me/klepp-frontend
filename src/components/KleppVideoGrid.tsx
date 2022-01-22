@@ -53,9 +53,9 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     render() {
         return (
             <div>
-                <div className="row">
+                <div className="videoGrid" style={{ padding: 10, marginTop: 20, marginLeft: 10, marginRight: 10}}>
                     {this.state.items &&
-                        <Grid container style={{ padding: 10 }} spacing={2} columns={16}>
+                        <Grid container spacing={2} columns={16}>
                             {this.renderItems()}
                         </Grid >
                     }
