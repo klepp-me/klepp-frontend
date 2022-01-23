@@ -4,7 +4,6 @@ interface KleppVideoPlayerItem {
     embedUrl: string
 }
 
-
 export default class KleppVideoPlayer extends React.Component<KleppVideoPlayerItem> {
 
     constructor(props: KleppVideoPlayerItem) {

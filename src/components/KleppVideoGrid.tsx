@@ -50,8 +50,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                         </Card>
                     </Grid>
                 )
-            }
-            )
+            })
     };
 
     render() {
