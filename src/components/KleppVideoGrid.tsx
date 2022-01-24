@@ -3,7 +3,11 @@ import axios from "axios";
 import React from "react"
 import KleppVideoPlayer from "./KleppVideoPlayer";
 
-interface KleppVideoGridItemsProps { }
+// TODO: Refactor to functional component?
+
+interface KleppVideoGridItemsProps { 
+    accessToken?: string
+}
 
 interface KleppVideoGridItemsState {
     items: KleppVideoFile[]
@@ -19,7 +23,6 @@ interface KleppVideoResponse {
 }
 
 export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsProps, KleppVideoGridItemsState> {
-
     constructor(props: KleppVideoGridItemsProps) {
         super(props);
         this.state = {
@@ -28,7 +31,11 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     }
 
     componentDidMount() {
-        axios.get<KleppVideoResponse>("testfiles.json").then(res => {
+        const config = {
+            headers: { Authorization: `Bearer ${this.props.accessToken}`}
+        };
+
+        axios.get<KleppVideoResponse>("https://api.klepp.me/api/v1/files", config).then(res => {
             this.setState({
                 items: res.data.files
             })
@@ -37,7 +44,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
 
     renderItems() {
         return this.state.items
-            .filter(item => item.uri.endsWith(".mp4")) // Add more extensions if needed.
+            .filter(item => item.uri.endsWith(".mp4") || item.file_name.startsWith("snx")) // Add more extensions if needed.
             .slice(0, 6) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {
                 return (

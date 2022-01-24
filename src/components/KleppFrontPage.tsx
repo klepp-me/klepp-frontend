@@ -1,6 +1,8 @@
 import { Typography } from "@mui/material";
 import React from "react"
 
+// TODO: Refactor to functional component?
+
 interface KleppFrontPageProps {
     logo: string
     title: string
