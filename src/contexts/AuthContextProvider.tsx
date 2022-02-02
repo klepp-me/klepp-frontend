@@ -6,14 +6,25 @@ import { useEffect, useState } from 'react';
 export default function useAuth() {
     const [user, setUser] = useState<any>();
     const [accessToken, setAccessToken] = useState<string>();
+    const [showSignUp, setShowSignUp] = useState(false);
 
     const handleAuth = (payload: HubPayload) => {
         switch (payload.event) {
             case 'signIn':
+                setShowSignUp(false);
                 return setUser(payload.data);
             case 'signOut':
                 return setUser;
         }
+    };
+
+    const signIn = () => {
+        setShowSignUp(true);
+    };
+
+    const signOut = () => {
+        Auth.signOut();
+        setUser(null);
     };
 
     useEffect(() => {
@@ -23,7 +34,7 @@ export default function useAuth() {
             })
             .catch(console.error);
 
-        Auth.currentSession().then(session => { // Testing testing.
+        Auth.currentSession().then(session => {
             const token = session.getAccessToken().getJwtToken();
             setAccessToken(token);
         })
@@ -41,6 +52,9 @@ export default function useAuth() {
     return {
         Auth,
         user,
-        accessToken
+        accessToken,
+        showSignUp,
+        signIn,
+        signOut
     }
 }

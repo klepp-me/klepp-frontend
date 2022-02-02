@@ -10,6 +10,7 @@ import '@aws-amplify/ui-react/styles.css';
 import { Button } from '@mui/material';
 import { AMPLIFY_CONFIG } from './config/amplify_config';
 import useAuth from './contexts/AuthContextProvider';
+import { Routes, Route, Link } from "react-router-dom";
 
 
 Amplify.configure(AMPLIFY_CONFIG);
@@ -18,33 +19,26 @@ Amplify.configure(AMPLIFY_CONFIG);
 const currentConfig = Auth.configure();
 
 function App() {
-  const { user, accessToken } = useAuth()
+  const { user, accessToken, showSignUp, signOut, signIn } = useAuth()
 
-  if (user && accessToken) {
+  if ((user && accessToken) || !showSignUp) {
     return (
       <ThemeProvider theme={theme}>
         <div className="App ">
           <Header />
+          {user ? <Button onClick={signOut} color={'inherit'}>Logg ut</Button> : <Button onClick={signIn} color={'inherit'}>Logg inn</Button>}
           <KleppFrontPage logo="/assets/klepp_logo.png" title="Klepp.me" subtitle="Where minimovies come alive" />
-          <KleppVideoGrid accessToken={accessToken} />
+          <KleppVideoGrid />
+          {accessToken && <KleppVideoGrid accessToken={accessToken} /> }
         </div>
       </ThemeProvider>)
   } else {
     return (
       <Authenticator signUpAttributes={['email']}>
-        {({ user, signOut }) => (
-          <ThemeProvider theme={theme}>
-            <div className="App ">
-              <Header />
-              <Button onClick={signOut} color={'inherit'}>Logg ut</Button>
-              <KleppFrontPage logo="/assets/klepp_logo.png" title="Klepp.me" subtitle="Where minimovies come alive" />
-              <KleppVideoGrid />
-            </div>
-          </ThemeProvider>)}
+        {({ user, signOut }) => (<></>)}
       </Authenticator>
     );
   }
 }
-
 
 export default App;
