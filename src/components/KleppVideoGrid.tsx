@@ -47,7 +47,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
 
     renderItems() {
         return this.state.items
-            .filter(item => item.uri.endsWith(".mp4")) // Add more extensions if needed.
+            .filter(item => item.uri.endsWith(".mp4")) // Done in aws
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
             .slice(0, 8) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {
@@ -66,7 +66,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
 
     renderHiddenItems() {
         return this.state.hiddenItems
-            .filter(item => item.uri.endsWith(".mp4")) // Add more extensions if needed.
+            .filter(item => item.uri.endsWith(".mp4"))
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
             .slice(0, 8) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {

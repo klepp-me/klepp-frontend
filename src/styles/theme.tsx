@@ -5,9 +5,9 @@ import { palette } from '@mui/system';
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#3e2723',
-            light: '#6a4f4b',
-            dark: '#1b0000'
+            main: '#FEECE9',
+            light: '#CCD1E4',
+            dark: '#FE7E6D'
         },
         secondary: {
             main: '#263238',
