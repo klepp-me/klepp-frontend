@@ -12,7 +12,7 @@ export const  AMPLIFY_CONFIG = {
       mandatorySignIn: false,
   
       // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
-      authenticationFlowType: 'USER_PASSWORD_AUTH',
+      authenticationFlowType: 'USER_SRP_AUTH',
   
   
       // OPTIONAL - Hosted UI configuration
