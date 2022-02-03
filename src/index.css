@@ -5,10 +5,35 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: "#492929"
+  background: rgb(15,32,39);
+  background: linear-gradient(90deg, rgba(15,32,39,1) 0%, rgba(32,58,67,1) 50%, rgba(44,83,100,1) 100%);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.amplify-button {
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  background: none;
+  border: 2px solid black;
+}
+
+.amplify-button:hover {
+  background: gray;
+}
+
+.amplify-button[data-variation='primary'] {
+  background: linear-gradient(
+    to right,
+    var(--amplify-colors-neutral-100),
+    var(--amplify-colors-teal-100),
+    var(--amplify-colors-neutral-100)
+  );
+}
+
+.amplify-tabs-item[data-state='active'] {
+  color: red;
 }
