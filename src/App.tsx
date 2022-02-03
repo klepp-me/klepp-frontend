@@ -21,9 +21,9 @@ Amplify.configure(AMPLIFY_CONFIG);
 const currentConfig = Auth.configure();
 
 function App() {
-  const { user, accessToken, showSignUp, signOut, signIn } = useAuth()
+  const { user, accessToken, showSignUp, signOut, signIn, userName } = useAuth()
 
-  if ((user && accessToken) || !showSignUp) {
+  if ((user && accessToken && userName) || !showSignUp) {
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
@@ -31,7 +31,7 @@ function App() {
           {user ? <Button onClick={signOut} color={'inherit'}>Logg ut</Button> : <Button onClick={signIn} color={'inherit'}>Logg inn</Button>}
           <KleppFrontPage logo="/assets/klepp_logo_boge_small.png" title={FRONTPAGE_TEXT.TITLE} subtitle={FRONTPAGE_TEXT.SUBTITLE} />
           <KleppVideoGrid />
-          {accessToken && <KleppVideoGrid accessToken={accessToken} />}
+          {accessToken && userName && <KleppVideoGrid accessToken={accessToken} userName={userName} />}
         </div>
       </ThemeProvider>)
   } else {

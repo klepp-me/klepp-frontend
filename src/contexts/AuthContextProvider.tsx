@@ -1,5 +1,6 @@
 import { HubPayload } from '@aws-amplify/core';
 import { Auth, Hub } from 'aws-amplify';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 
 import { useEffect, useState } from 'react';
 
@@ -7,11 +8,13 @@ export default function useAuth() {
     const [user, setUser] = useState<any>();
     const [accessToken, setAccessToken] = useState<string>();
     const [showSignUp, setShowSignUp] = useState(false);
+    const [userName, setUserName] = useState<string>();
 
     const handleAuth = (payload: HubPayload) => {
         switch (payload.event) {
             case 'signIn':
                 setShowSignUp(false);
+
                 return setUser(payload.data);
             case 'signOut':
                 return setUser;
@@ -24,6 +27,7 @@ export default function useAuth() {
 
     const signOut = () => {
         Auth.signOut();
+        setUserName("");
         setUser(null);
     };
 
@@ -31,6 +35,7 @@ export default function useAuth() {
         Auth.currentAuthenticatedUser()
             .then(user => {
                 setUser(user);
+                setUserName(user.username);
             })
             .catch(console.error);
 
@@ -55,6 +60,7 @@ export default function useAuth() {
         accessToken,
         showSignUp,
         signIn,
-        signOut
+        signOut,
+        userName
     }
 }
