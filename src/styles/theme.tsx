@@ -28,7 +28,7 @@ const theme = createTheme({
                 root: {
                     background: '#000a12',
                     color: '#ffffff',
-                    borderColor: '#ffffff00'
+                    borderColor: '#ffffff00',
                 }
             }
         },

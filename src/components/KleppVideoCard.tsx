@@ -9,11 +9,11 @@ interface KleppVideoCardProps {
 }
 
 function KleppVideoCard(props: KleppVideoCardProps) {
-    return (<Card style={{ marginTop: 0 }} square={true} elevation={2}>
+    return (<Card square={true} elevation={2}>
         <KleppVideoPlayer embedUrl={props.uri} />
-        <CardContent>
+        <CardContent sx={{ '&:last-child': { paddingBottom: '16px' } }}>
             <Typography variant="body1" color='white' noWrap>{props.title.replace(/\.[^/.]+$/, "")}</Typography>
-            <Typography variant="caption" color="white">{props.owner}</Typography>
+            <Typography variant="body2" color="white" sx={{ mt: 1 }}>{props.owner}</Typography>
             <Typography variant="caption" color="white">{props.datetime}</Typography>
         </CardContent>
     </Card>

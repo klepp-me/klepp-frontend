@@ -1,6 +1,6 @@
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import useAuth from '../contexts/AuthContextProvider';
 import { useNavigate } from 'react-router-dom';
 import { LoginOutlined, LogoutOutlined } from '@mui/icons-material';
@@ -26,7 +26,9 @@ function Header() {
                             <Typography variant="h6" color="inherit" component="div" noWrap sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
                                 {user.username}
                             </Typography>
-                            <LogoutOutlined onClick={signOut} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }} />
+                            <Tooltip title="Logg ut">
+                                <LogoutOutlined onClick={signOut} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }} />
+                            </Tooltip>
                         </Toolbar>
                     </AppBar>
                 </HideOnScroll>
