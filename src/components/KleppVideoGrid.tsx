@@ -1,6 +1,7 @@
 import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import React from "react"
+import KleppVideoCard from "./KleppVideoCard";
 import KleppVideoPlayer from "./KleppVideoPlayer";
 
 interface KleppVideoGridItemsProps {
@@ -46,23 +47,21 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             })
         })
     }
-    
+
 
     renderItems() {
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4")) // Done in aws
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
-            .slice(0, 8) // Remove this to show all items, to save bandwith in debugging..
+            .slice(0, 8)
             .map((item, index) => {
                 return (
                     <Grid item={true} xs={2} sm={4}>
-                        <Card style={{ marginTop: 10 }} square={true}>
-                            <CardContent>
-                                <Typography variant="body1">Lastet opp av: {item.username}</Typography>
-                                <Typography variant="body2" color='white'>{item.fileName.split("/").pop()}</Typography>
-                            </CardContent>
-                            <KleppVideoPlayer embedUrl={item.uri} />
-                        </Card>
+                        <KleppVideoCard
+                            title={item.fileName.split("/").pop()!}
+                            owner={item.username}
+                            uri={item.uri}
+                            datetime={new Date(item.datetime).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })} />
                     </Grid>
                 )
             })
@@ -72,16 +71,16 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4") && item.fileName.includes(this.props.userName!))
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
-            .slice(0, 8) // Remove this to show all items, to save bandwith in debugging..
+            .slice(0, 8)
             .map((item, index) => {
                 return (
                     <Grid item={true} xs={2} sm={4}>
-                        <Card style={{ marginTop: 20 }} square={true}>
-                            <CardContent>
-                                <Typography variant="body1">Lastet opp av: {item.username}</Typography>
-                                <Typography variant="body2" color='white'>{item.fileName.split("/").pop()}</Typography>
-                            </CardContent>
-                            <KleppVideoPlayer embedUrl={item.uri} />
+                        <Card style={{ marginTop: 10 }} square={true}>
+                            <KleppVideoCard
+                                title={item.fileName.split("/").pop()!}
+                                owner={item.username}
+                                uri={item.uri}
+                                datetime={new Date(item.datetime).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })} />
                         </Card>
                     </Grid>
                 )
@@ -97,11 +96,11 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                 return (
                     <Grid item={true} xs={2} sm={4}>
                         <Card style={{ marginTop: 10 }} square={true}>
-                            <CardContent>
-                                <Typography variant="body1">Lastet opp av: {item.username}</Typography>
-                                <Typography variant="body2">{item.fileName.split("/").pop()}</Typography>
-                            </CardContent>
-                            <KleppVideoPlayer embedUrl={item.uri} />
+                            <KleppVideoCard
+                                title={item.fileName.split("/").pop()!}
+                                owner={item.username}
+                                uri={item.uri}
+                                datetime={new Date(item.datetime).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })} />
                         </Card>
                     </Grid>
                 )
@@ -110,8 +109,8 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
 
     render() {
         if (!this.props.accessToken || !this.props.userName) return (
-            <div style={{paddingBottom: 32}}>
-                <Typography variant="h3" color="white" sx={{ mt: 16 }}>Nyeste videoer</Typography>
+            <div style={{ paddingBottom: 32 }}>
+                <Typography variant="h4" color="white" sx={{ mt: 2 }}>Nyeste videoer</Typography>
                 <div className="videoGrid" style={{ padding: 10, marginTop: 20, marginLeft: 10, marginRight: 10 }}>
                     {this.state.items &&
                         <Grid direction="row" container spacing={2} columns={16}>
@@ -122,9 +121,9 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             </div>
         )
         else return (
-            <div style={{paddingBottom: 32}}>
+            <div style={{ paddingBottom: 32 }}>
                 <div>
-                    <Typography variant="h3" color="white" sx={{ mt: 16 }}>Mine videoer</Typography>
+                    <Typography variant="h4" color="white" sx={{ mt: 2 }}>Mine videoer</Typography>
                     <div className="privateVideoGrid" style={{ padding: 10, marginTop: 20, marginLeft: 10, marginRight: 10 }}>
                         {this.state.items &&
                             <Grid direction="row" container spacing={2} columns={16}>
@@ -135,7 +134,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                 </div>
 
                 <div>
-                    <Typography variant="h3" color="white" sx={{ mt: 16 }}>Mine private videoer</Typography>
+                    <Typography variant="h4" color="white" sx={{ mt: 2 }}>Mine private videoer</Typography>
                     <div className="privateHiddenVideoGrid" style={{ padding: 10, marginTop: 20, marginLeft: 10, marginRight: 10 }}>
                         {this.state.hiddenItems &&
                             <Grid direction="row" container spacing={2} columns={16}>

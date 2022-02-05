@@ -8,14 +8,11 @@ import Amplify, { Auth } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import { AMPLIFY_CONFIG } from './config/amplify_config';
 import useAuth from './contexts/AuthContextProvider';
-import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { FRONTPAGE_TEXT } from './enums/AppTextTypes';
 import Login from './components/Login';
 
 Amplify.configure(AMPLIFY_CONFIG);
-
-// You can get the current config object
-const currentConfig = Auth.configure();
 
 function App() {
   return (

@@ -1,6 +1,5 @@
 import { createTheme } from '@mui/material/styles';
 import { red } from "@mui/material/colors";
-import { palette } from '@mui/system';
 
 const theme = createTheme({
     palette: {
@@ -10,9 +9,9 @@ const theme = createTheme({
             dark: '#FE7E6D'
         },
         secondary: {
-            main: '#263238',
-            light: '#4f5b62',
-            dark: '#000a12'
+            main: '#004d40',
+            light: '#39796b',
+            dark: '#00251a'
         },
         error: {
             main: red.A400
@@ -32,7 +31,15 @@ const theme = createTheme({
                     borderColor: '#ffffff00'
                 }
             }
-        }
+        },
+        MuiToolbar: {
+            styleOverrides: {
+                root: {
+                    background: '#0f2027',
+                    color: 'white'
+                }
+            }
+        },
     }
 });
 
