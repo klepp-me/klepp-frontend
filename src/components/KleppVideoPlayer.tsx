@@ -1,4 +1,5 @@
 import React from "react"
+import ReactPlayer from "react-player";
 
 interface KleppVideoPlayerItem {
     embedUrl: string
@@ -12,9 +13,15 @@ export default class KleppVideoPlayer extends React.Component<KleppVideoPlayerIt
 
     render() {
         return (
-            <div className="VideoPlayer">
-                <video id={this.props.embedUrl} src={this.props.embedUrl} preload="metadata" height="320"
-                    width="100%" controls/>
+            <div className='klepp-videocontainer'>
+                <ReactPlayer className='klepp-videoplayer' width='100%' height='100%' url={this.props.embedUrl} config={{
+                    file: {
+                        forceVideo: true,
+                        attributes: {
+                            controls: true
+                        }
+                    }
+                }} />
             </div>
         )
     };
