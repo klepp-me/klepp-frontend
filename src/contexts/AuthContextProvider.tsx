@@ -7,24 +7,17 @@ import { useEffect, useState } from 'react';
 export default function useAuth() {
     const [user, setUser] = useState<any>();
     const [accessToken, setAccessToken] = useState<string>();
-    const [showSignUp, setShowSignUp] = useState(false);
     const [userName, setUserName] = useState<string>();
 
     const handleAuth = (payload: HubPayload) => {
         switch (payload.event) {
             case 'signIn':
-                setShowSignUp(false);
-
                 return setUser(payload.data);
             case 'signOut':
                 return setUser;
         }
     };
-
-    const signIn = () => {
-        setShowSignUp(true);
-    };
-
+    
     const signOut = () => {
         Auth.signOut();
         setUserName("");
@@ -58,8 +51,6 @@ export default function useAuth() {
         Auth,
         user,
         accessToken,
-        showSignUp,
-        signIn,
         signOut,
         userName
     }
