@@ -11,6 +11,7 @@ import useAuth from './contexts/AuthContextProvider';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { FRONTPAGE_TEXT } from './enums/AppTextTypes';
 import Login from './components/Login';
+import UploadFile from './components/UploadFile';
 
 Amplify.configure(AMPLIFY_CONFIG);
 
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login />} />
+        <Route path='/upload' element={<UploadFile />} />
       </Routes>
     </BrowserRouter>
   )

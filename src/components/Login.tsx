@@ -9,7 +9,7 @@ import useAuth from "../contexts/AuthContextProvider";
 function Login() {
     const navigate = useNavigate();
   
-    const { user, accessToken, signOut, userName } = useAuth()
+    const { user } = useAuth()
   
     function navigateToMain() {
       navigate('/', { replace: true });

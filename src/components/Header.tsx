@@ -3,7 +3,7 @@ import Toolbar from '@mui/material/Toolbar'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import useAuth from '../contexts/AuthContextProvider';
 import { useNavigate } from 'react-router-dom';
-import { LoginOutlined, LogoutOutlined } from '@mui/icons-material';
+import { LoginOutlined, LogoutOutlined, UploadOutlined } from '@mui/icons-material';
 import HideOnScroll from './utils/HideOnScroll';
 
 function Header() {
@@ -13,6 +13,14 @@ function Header() {
         navigate('/login', { replace: false });
     }
 
+    function navigateToUpload() {
+        navigate('/upload', { replace: false });
+    }
+
+    function navigateToHome() {
+        navigate('/', { replace: true })
+    }
+
     const navigate = useNavigate();
     if (user) {
         return (
@@ -20,14 +28,22 @@ function Header() {
                 <HideOnScroll>
                     <AppBar position="fixed" elevation={4}>
                         <Toolbar variant="regular">
-                            <Typography variant="h6" color="inherit" component="div" sx={{ textAlign: 'left', flexGrow: 1 }}>
+                            <Typography variant="h6" color="inherit" component="div" sx={{ textAlign: 'left', flexGrow: 1, "&:hover": { 'cursor': 'pointer' } }} onClick={navigateToHome}>
                                 Klepp
                             </Typography>
-                            <Typography variant="h6" color="inherit" component="div" noWrap sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
-                                {user.username}
-                            </Typography>
+                            <Tooltip title="Last opp fil">
+                                <IconButton onClick={navigateToUpload} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }}> <UploadOutlined />
+                                    <Typography variant="h6" color="white" component="div" sx={{ textAlign: 'left', flexGrow: 1, ml: 1 }}>
+                                        Nytt klepp
+                                    </Typography>
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Logg ut">
-                                <LogoutOutlined onClick={signOut} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }} />
+                                <IconButton onClick={signOut} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }}> <LogoutOutlined />
+                                    <Typography variant="h6" color="white" component="div" sx={{ textAlign: 'left', flexGrow: 1, ml: 1 }}>
+                                        {user.username}
+                                    </Typography>
+                                </IconButton>
                             </Tooltip>
                         </Toolbar>
                     </AppBar>
@@ -41,7 +57,7 @@ function Header() {
                 <HideOnScroll>
                     <AppBar position="fixed" elevation={4}>
                         <Toolbar variant="regular">
-                            <Typography variant="h6" color="inherit" component="div" sx={{ textAlign: 'left', flexGrow: 1 }}>
+                            <Typography variant="h6" color="inherit" component="div" onClick={navigateToHome} sx={{ textAlign: 'left', flexGrow: 1, "&:hover": { 'cursor': 'pointer' } }}>
                                 Klepp
                             </Typography>
                             <IconButton onClick={navigateToLogin} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }}> <LoginOutlined />

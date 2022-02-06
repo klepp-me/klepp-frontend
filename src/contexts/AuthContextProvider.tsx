@@ -27,8 +27,11 @@ export default function useAuth() {
     useEffect(() => {
         Auth.currentAuthenticatedUser()
             .then(user => {
-                setUser(user);
-                setUserName(user.username);
+                if (user){
+                    console.log("Got user");
+                    setUser(user);
+                    setUserName(user.username);
+                }
             })
             .catch(console.error);
 

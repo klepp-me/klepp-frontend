@@ -2,7 +2,6 @@ import { Card, CardContent, CardMedia, Divider, Grid, Typography } from "@mui/ma
 import axios from "axios";
 import React from "react"
 import KleppVideoCard from "./KleppVideoCard";
-import KleppVideoPlayer from "./KleppVideoPlayer";
 
 interface KleppVideoGridItemsProps {
     accessToken?: string,
@@ -53,7 +52,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4")) // Done in aws
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
-            .slice(0, 8)
+            .slice(0, 4) // For development, so we dont have to load 100x videos every time ¯\_(ツ)_/¯ 
             .map((item, index) => {
                 return (
                     <Grid item={true} xs={2} sm={4} >
@@ -71,7 +70,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4") && item.fileName.includes(this.props.userName!))
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
-            .slice(0, 8)
+            .slice(0, 4)
             .map((item, index) => {
                 return (
                     <Grid item={true} xs={2} sm={4}>
@@ -89,7 +88,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         return this.state.hiddenItems
             .filter(item => item.uri.endsWith(".mp4"))
             .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
-            .slice(0, 8) // Remove this to show all items, to save bandwith in debugging..
+            .slice(0, 4) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {
                 return (
                     <Grid item={true} xs={2} sm={4}>

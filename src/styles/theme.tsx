@@ -40,6 +40,17 @@ const theme = createTheme({
                 }
             }
         },
+        MuiButtonBase: {
+            styleOverrides: {
+                root: {
+                    [`&.MuiButton-root.Mui-disabled`]: {
+                        opacity: '0.3',
+                        color: 'black',
+                        backgroundColor: 'grey'
+                    }
+                }
+            }
+        }
     }
 });
 

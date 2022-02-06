@@ -24,3 +24,9 @@
   top: 0;
   left: 0;
 }
+
+input[type="file"] {
+  margin-right: 10em;
+  color: white;
+  font-size: 1.05em;
+}
