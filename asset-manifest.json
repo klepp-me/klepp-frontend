@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/klepp-frontend/static/css/main.f167dca1.css",
-    "main.js": "/klepp-frontend/static/js/main.e1e7e026.js",
-    "static/js/787.03020c08.chunk.js": "/klepp-frontend/static/js/787.03020c08.chunk.js",
-    "index.html": "/klepp-frontend/index.html",
-    "main.f167dca1.css.map": "/klepp-frontend/static/css/main.f167dca1.css.map",
-    "main.e1e7e026.js.map": "/klepp-frontend/static/js/main.e1e7e026.js.map",
-    "787.03020c08.chunk.js.map": "/klepp-frontend/static/js/787.03020c08.chunk.js.map"
+    "main.css": "/static/css/main.f167dca1.css",
+    "main.js": "/static/js/main.dc02fb79.js",
+    "static/js/787.03020c08.chunk.js": "/static/js/787.03020c08.chunk.js",
+    "index.html": "/index.html",
+    "main.f167dca1.css.map": "/static/css/main.f167dca1.css.map",
+    "main.dc02fb79.js.map": "/static/js/main.dc02fb79.js.map",
+    "787.03020c08.chunk.js.map": "/static/js/787.03020c08.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f167dca1.css",
-    "static/js/main.e1e7e026.js"
+    "static/js/main.dc02fb79.js"
   ]
 }
