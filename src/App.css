@@ -1,0 +1,32 @@
+.App {
+  text-align: center;
+  background: rgb(15,32,39);
+  background: linear-gradient(90deg, rgba(15,32,39,1) 0%, rgba(54,71,79,1) 50%, rgba(44,83,100,1) 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.klepp-videocontainer {
+  position: relative;
+  padding-top: 56.25% /* Player ratio: 100 / (1280 / 720) */
+}
+
+.klepp-videoplayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+input[type="file"] {
+  margin-right: 10em;
+  color: white;
+  font-size: 1.05em;
+}
