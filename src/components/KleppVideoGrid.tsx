@@ -40,7 +40,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             headers: { Authorization: `Bearer ${this.props.accessToken}` }
         };
 
-         axios.get<KleppVideoResponse>(`${API_CONFIG.baseUrl}files`, config).then(res => {
+         axios.get<KleppVideoResponse>(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`, config).then(res => {
             this.setState({
                 items: res.data.files,
                 hiddenItems: res.data.hiddenFiles
