@@ -1,7 +1,7 @@
 {
   "name": "klepp-frontend",
   "version": "0.1.0",
-  "homepage": "https://klepp.me",
+  "homepage": "klepp.me",
   "private": false,
   "dependencies": {
     "@aws-amplify/ui-react": "^2.1.9",
