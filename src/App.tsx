@@ -33,7 +33,7 @@ function Main() {
     <ThemeProvider theme={theme}>
       <div className="App">
         <Header />
-        <KleppFrontPage logo="/assets/klepp_logo_boge_small.png" title={FRONTPAGE_TEXT.TITLE} subtitle={FRONTPAGE_TEXT.SUBTITLE} />
+        <KleppFrontPage logo="assets/klepp_logo_boge_small.png" title={FRONTPAGE_TEXT.TITLE} subtitle={FRONTPAGE_TEXT.SUBTITLE} />
         <KleppVideoGrid userName={userName}/>
         {accessToken && userName && <KleppVideoGrid accessToken={accessToken} userName={userName} />}
       </div>

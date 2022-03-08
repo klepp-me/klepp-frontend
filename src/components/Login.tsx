@@ -37,7 +37,7 @@ function Login() {
         <View textAlign="center" padding="20">
           <Image
             alt="Amplify logo"
-            src="/assets/klepp_logo_boge_small.png"
+            src="assets/klepp_logo_boge_small.png"
             width={200}
             height={200}
             margin={20}
