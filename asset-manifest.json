@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/klepp-frontend/static/css/main.f167dca1.css",
-    "main.js": "/klepp-frontend/static/js/main.070b204d.js",
+    "main.js": "/klepp-frontend/static/js/main.e1e7e026.js",
     "static/js/787.03020c08.chunk.js": "/klepp-frontend/static/js/787.03020c08.chunk.js",
     "index.html": "/klepp-frontend/index.html",
     "main.f167dca1.css.map": "/klepp-frontend/static/css/main.f167dca1.css.map",
-    "main.070b204d.js.map": "/klepp-frontend/static/js/main.070b204d.js.map",
+    "main.e1e7e026.js.map": "/klepp-frontend/static/js/main.e1e7e026.js.map",
     "787.03020c08.chunk.js.map": "/klepp-frontend/static/js/787.03020c08.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f167dca1.css",
-    "static/js/main.070b204d.js"
+    "static/js/main.e1e7e026.js"
   ]
 }
