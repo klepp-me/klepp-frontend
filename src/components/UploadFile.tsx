@@ -1,4 +1,4 @@
-import { Button, Input, LinearProgress, ThemeProvider, Typography } from "@mui/material";
+import { Button, LinearProgress, ThemeProvider, Typography } from "@mui/material";
 import { useState } from "react";
 import useAuth from "../contexts/AuthContextProvider";
 import uploadVideoService from "../services/upload-video-service";
@@ -8,7 +8,7 @@ import Header from "./Header";
 function UploadFile() {
 
     const { user, accessToken } = useAuth()
-
+    
     const [selectedFile, setSelectedFile] = useState<any>();
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
@@ -37,7 +37,6 @@ function UploadFile() {
         if (selectedFile[0] && accessToken) {
             setProgress(0)
             setIsUploading(true)
-
             uploadVideoService.upload(selectedFile[0], accessToken, (event: ProgressEvent<EventTarget>) => {
                 setProgress(Math.round((100 * event.loaded) / event.total))
             }).then((res) => {
@@ -54,7 +53,6 @@ function UploadFile() {
     }
 
     function selectFile(event: React.FormEvent<HTMLInputElement>) {
-        console.log(event.currentTarget.files)
         if (event.currentTarget.files && event.currentTarget.files.length > 0 == true) {
             setSelectedFile(event.currentTarget.files)
         } else {

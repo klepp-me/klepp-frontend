@@ -22,7 +22,7 @@ export default class KleppVideoPlayer extends React.Component<KleppVideoPlayerIt
                         }
                     }
                 }} />
-            </div>
+            </div >
         )
     };
 }

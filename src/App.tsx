@@ -28,13 +28,13 @@ function App() {
 }
 
 function Main() {
-  const { user, accessToken, signOut, userName } = useAuth()
+  const { accessToken, userName } = useAuth()
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
         <Header />
         <KleppFrontPage logo="/assets/klepp_logo_boge_small.png" title={FRONTPAGE_TEXT.TITLE} subtitle={FRONTPAGE_TEXT.SUBTITLE} />
-        <KleppVideoGrid />
+        <KleppVideoGrid userName={userName}/>
         {accessToken && userName && <KleppVideoGrid accessToken={accessToken} userName={userName} />}
       </div>
     </ThemeProvider>)
