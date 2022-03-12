@@ -7,7 +7,7 @@ function KleppVideoPlayer() {
     const [searchParams] = useSearchParams();
 
     function getValidUri() {
-        if (`${searchParams.get("uri")}` != null && `${searchParams.get("uri")}`.startsWith(API_CONFIG.webBaseUrl)) {
+        if (`${searchParams.get("uri")}` != null && `${searchParams.get("uri")}`.startsWith(`${API_CONFIG.fileBaseUrl}`)) {
             return `${searchParams.get("uri")}`;
         } else {
             throw new Error("Unsupported uri path");
