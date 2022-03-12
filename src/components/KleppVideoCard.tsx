@@ -1,6 +1,7 @@
 import { DeleteOutlined, ShareOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Card, CardContent, Snackbar, Stack, Tooltip, Typography } from "@mui/material";
 import { useState } from "react";
+import { API_CONFIG } from "../config/api_config";
 import useAuth from "../contexts/AuthContextProvider";
 import uploadVideoService from "../services/upload-video-service";
 import KleppVideoPlayer from "./KleppVideoPlayer";
@@ -81,6 +82,10 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         setOpen(false)
     }
 
+    function getUri() {
+        return `${API_CONFIG.baseUrl}video?uri=${props.uri}`
+    }
+
 
     return (<Card square={true} elevation={2} key={props.datetime.toString()}>
         <KleppVideoPlayer embedUrl={props.uri} />
@@ -90,7 +95,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
                     <DeleteOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => deleteItem(props.fileName)} />
                 </Tooltip>}
                 <Tooltip title="Del video">
-                    <ShareOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => copyToClipboard(props.uri)} />
+                    <ShareOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${props.uri}`)} />
                 </Tooltip>
                 {!props.overrideHidden && <Tooltip title={getVisibilityString(isHidden)}>
                     {!isHidden ? <VisibilityOff sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => toggleItemVisibility(isHidden, props.fileName)} /> : <Visibility sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => toggleItemVisibility(isHidden, props.fileName)} />}
