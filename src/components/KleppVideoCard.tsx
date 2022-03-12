@@ -82,11 +82,6 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         setOpen(false)
     }
 
-    function getUri() {
-        return `${API_CONFIG.baseUrl}video?uri=${props.uri}`
-    }
-
-
     return (<Card square={true} elevation={2} key={props.datetime.toString()}>
         <KleppVideoPlayer embedUrl={props.uri} />
         <CardContent sx={{ '&:last-child': { paddingBottom: '16px' }, paddingTop: 1 }}>
