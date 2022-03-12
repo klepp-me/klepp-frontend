@@ -12,6 +12,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { FRONTPAGE_TEXT } from './enums/AppTextTypes';
 import Login from './components/Login';
 import UploadFile from './components/UploadFile';
+import KleppVideoPreview from './components/KleppVideoPreview';
 
 Amplify.configure(AMPLIFY_CONFIG);
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login />} />
         <Route path='/upload' element={<UploadFile />} />
+        <Route path='/video' element={<KleppVideoPreview />} />
       </Routes>
     </BrowserRouter>
   )
