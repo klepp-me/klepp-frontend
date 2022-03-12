@@ -65,7 +65,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             .slice(0, 12) // For development, so we dont have to load 100x videos every time ¯\_(ツ)_/¯ 
             .map((item, index, key) => {
                 return (
-                    <Grid item={true} xs={2} sm={4} key={item.fileName}>
+                    <Grid item={true} xs={2} sm={4} key={item.fileName} sx={{minWidth: 200}}>
                         <KleppVideoCard key={item.datetime}
                             title={item.fileName.split("/").pop()!}
                             owner={item.username}
@@ -89,7 +89,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             .slice(0, 4)
             .map((item, index) => {
                 return (
-                    <Grid item={true} xs={2} sm={4}>
+                    <Grid item={true} xs={2} sm={4} sx={{minWidth: 200}}>
                         <KleppVideoCard
                             title={item.fileName.split("/").pop()!}
                             owner={item.username}
@@ -112,7 +112,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             .slice(0, 4) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {
                 return (
-                    <Grid item={true} xs={2} sm={4} key={item.fileName}>
+                    <Grid item={true} xs={2} sm={4} key={item.fileName} sx={{minWidth: 200}}>
                         <KleppVideoCard
                             title={item.fileName.split("/").pop()!}
                             owner={item.username}
