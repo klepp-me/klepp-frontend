@@ -4,10 +4,10 @@ import { API_CONFIG } from "../config/api_config";
 
 class UploadFilesService {
 
-    upload(file: any, accessToken: string, onUploadProgress: (event: ProgressEvent<EventTarget>) => void) {
+    upload<T = any, R = AxiosResponse<T>>(file: any, accessToken: string, onUploadProgress: (event: ProgressEvent<EventTarget>) => void) {
         let formData = new FormData();
         formData.append("file", file);
-        return http.post("/files", formData, {
+        return http.post<T, R>("/files", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 "Authorization": `Bearer ${accessToken}`
