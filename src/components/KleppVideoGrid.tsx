@@ -2,6 +2,7 @@ import { Divider, Grid, Typography } from "@mui/material";
 import axios from "axios";
 import React from "react"
 import { API_CONFIG } from "../config/api_config";
+import { KleppVideoFile } from "../models/KleppVideoModels";
 import KleppVideoCard from "./KleppVideoCard";
 
 interface KleppVideoGridItemsProps {
@@ -14,16 +15,9 @@ interface KleppVideoGridItemsState {
     hiddenItems: KleppVideoFile[]
 }
 
-interface KleppVideoFile {
-    fileName: string;
-    uri: string;
-    datetime: string;
-    username: string
-}
-
-interface KleppVideoResponse {
-    files: KleppVideoFile[],
-    hiddenFiles: KleppVideoFile[]
+interface KleppVideoFilesResponse {
+    total_count: number,
+    response: KleppVideoFile[]
 }
 
 export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsProps, KleppVideoGridItemsState> {
@@ -40,10 +34,11 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
             headers: { Authorization: `Bearer ${this.props.accessToken}` }
         };
 
-         axios.get<KleppVideoResponse>(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`, config).then(res => {
+        axios.get<KleppVideoFilesResponse>(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`, config).then(res => {
+            console.log(res.data);
             this.setState({
-                items: res.data.files,
-                hiddenItems: res.data.hiddenFiles
+                items: res.data.response,
+                hiddenItems: []
             })
         }).catch(e => {
             console.error(e);
@@ -52,8 +47,8 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
 
     itemDeleted = (fileName: string) => {
         this.setState(prevState => ({
-            items: prevState.items.filter(item => item.fileName !== fileName),
-            hiddenItems: prevState.hiddenItems.filter(item => item.fileName !== fileName)
+            items: prevState.items.filter(item => item.path !== fileName),
+            hiddenItems: prevState.hiddenItems.filter(item => item.path !== fileName)
         }))
     };
 
@@ -61,21 +56,22 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     renderItems() {
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4")) // Done in aws
-            .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
-            .slice(0, 12) // For development, so we dont have to load 100x videos every time ¯\_(ツ)_/¯ 
+            //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
+            .slice(0, 12)
             .map((item, index, key) => {
                 return (
-                    <Grid item={true} xs={2} sm={4} key={item.fileName} sx={{minWidth: 200}}>
-                        <KleppVideoCard key={item.datetime}
-                            title={item.fileName.split("/").pop()!}
-                            owner={item.username}
+                    <Grid item={true} xs={2} sm={4} key={item.path} sx={{ minWidth: 200 }}>
+                        <KleppVideoCard
+                            title={item.path.split("/").pop()!}
+                            owner={item.user.name}
                             uri={item.uri}
-                            fileName={item.fileName}
-                            datetime={new Date(item.datetime).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                            canDelete={(this.props.userName != null && item.username === this.props.userName)}
+                            fileName={item.path}
+                            thumbnailUri={item.thumbnail_uri}
+                            datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            canDelete={(this.props.userName != null && item.uploaded_at === this.props.userName)}
                             isHidden={false}
                             overrideHidden={true}
-                            onDelete={() => this.itemDeleted(item.fileName)}
+                            onDelete={() => this.itemDeleted(item.path)}
                         />
                     </Grid>
                 )
@@ -84,19 +80,20 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
 
     renderOwnItems() {
         return this.state.items
-            .filter(item => item.uri.endsWith(".mp4") && item.fileName.includes(this.props.userName!))
-            .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
+            .filter(item => item.uri.endsWith(".mp4") && item.path.includes(this.props.userName!))
+            //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
             .slice(0, 4)
             .map((item, index) => {
                 return (
-                    <Grid item={true} xs={2} sm={4} sx={{minWidth: 200}}>
+                    <Grid item={true} xs={2} sm={4} sx={{ minWidth: 200 }} key={item.path}>
                         <KleppVideoCard
-                            title={item.fileName.split("/").pop()!}
-                            owner={item.username}
+                            title={item.path.split("/").pop()!}
+                            owner={item.user.name}
                             uri={item.uri}
-                            fileName={item.fileName}
-                            datetime={new Date(item.datetime).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                            isHidden={this.state.hiddenItems.find(privateItem => item.fileName === privateItem.fileName) != null}
+                            fileName={item.path}
+                            thumbnailUri={item.thumbnail_uri}
+                            datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            isHidden={this.state.hiddenItems.find(privateItem => item.path === privateItem.path) != null}
                             canDelete={true}
                             overrideHidden={false}
                             onDelete={this.itemDeleted} />
@@ -108,17 +105,18 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     renderHiddenItems() {
         return this.state.hiddenItems
             .filter(item => item.uri.endsWith(".mp4"))
-            .sort((a, b) => Date.parse(a.datetime) - Date.parse(b.datetime)).reverse()
+            //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
             .slice(0, 4) // Remove this to show all items, to save bandwith in debugging..
             .map((item, index) => {
                 return (
-                    <Grid item={true} xs={2} sm={4} key={item.fileName} sx={{minWidth: 200}}>
+                    <Grid item={true} xs={2} sm={4} key={item.path} sx={{ minWidth: 200 }}>
                         <KleppVideoCard
-                            title={item.fileName.split("/").pop()!}
-                            owner={item.username}
+                            title={item.path.split("/").pop()!}
+                            owner={item.user.name}
                             uri={item.uri}
-                            fileName={item.fileName}
-                            datetime={new Date(item.datetime).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            fileName={item.path}
+                            thumbnailUri={item.thumbnail_uri}
+                            datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
                             isHidden={true}
                             canDelete={true}
                             overrideHidden={false}
@@ -154,7 +152,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                         }
                     </div>
                 </div>
-            {/*     {this.state.hiddenItems.length > 0 && <div style={{ marginTop: 16, paddingBottom: 16 }}>
+                {/*     {this.state.hiddenItems.length > 0 && <div style={{ marginTop: 16, paddingBottom: 16 }}>
                     <Divider variant="middle" sx={{ height: 12, borderBottomWidth: 2 }} />
                     <Typography variant="h4" color="white" sx={{ mt: 2, textAlign: 'left', ml: 2 }}>Mine private videoer</Typography>
                     <div className="privateHiddenVideoGrid" style={{ marginTop: 12, marginLeft: 16, marginRight: 16 }}>

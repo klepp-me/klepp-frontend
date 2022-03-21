@@ -24,7 +24,7 @@ class UploadFilesService {
                 'Content-Type': 'application/json'
             },
             data: {
-                "fileName": fileName
+                "file_name": fileName
             }
         };
 

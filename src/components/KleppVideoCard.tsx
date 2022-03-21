@@ -13,6 +13,7 @@ interface KleppVideoCardProps {
     fileName: string,
     datetime: string,
     canDelete: boolean,
+    thumbnailUri: string,
     onDelete: (fileName: string) => void,
     isHidden: boolean,
     overrideHidden: boolean,
@@ -65,7 +66,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     function toggleItemVisibility(isVisible: boolean, fileName: string) {
         if (accessToken != null) {
             uploadVideoService.hide(!isVisible, fileName, accessToken).then(() => {
-                setIsHidden(!isVisible)            
+                setIsHidden(!isVisible)
             }).catch((err) => {
                 setAlertText("Could not update visibility")
                 openAlertClicked()
@@ -83,7 +84,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     }
 
     return (<Card square={true} elevation={2} key={props.datetime.toString()}>
-        <KleppVideoPlayer embedUrl={props.uri} />
+        <KleppVideoPlayer embedUrl={props.uri} thumbnailUri={props.thumbnailUri} />
         <CardContent sx={{ '&:last-child': { paddingBottom: '16px' }, paddingTop: 1 }}>
             <Stack direction="row" spacing={2} justifyContent="flex-end" >
                 {props.canDelete && <Tooltip title="Slett video">
