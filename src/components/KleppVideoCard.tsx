@@ -103,10 +103,14 @@ function KleppVideoCard(props: KleppVideoCardProps) {
             kleppVideoService.dislike(path, accessToken).then((data) => {
                 setLikes(data.data.likes)
             }).catch((err) => {
-                setAlertText("Log in to like video")
+                setAlertText("Could not like video")
                 openAlertClicked()
                 console.log(err)
             })
+        }
+        else {
+            setAlertText("Log in to like video")
+            openAlertClicked()
         }
     }
 
@@ -132,7 +136,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     }
 
     function renderLike() {
-       if (props.username && likes.map((user) => user.name).indexOf(props.username) !== -1) {
+        if (props.username && likes.map((user) => user.name).indexOf(props.username) !== -1) {
             return <Stack direction="row" spacing={0.5} justifyContent="flex-end" >
                 <Tooltip title="Unlike video">
                     <FavoriteOutlinedIcon sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} onClick={() => dislikeItem(props.fileName)} />
