@@ -35,7 +35,6 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         };
 
         axios.get<KleppVideoFilesResponse>(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`, config).then(res => {
-            console.log(res.data);
             this.setState({
                 items: res.data.response,
                 hiddenItems: []
@@ -84,7 +83,7 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4") && item.path.includes(this.props.userName!))
             //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
-            .slice(0, 4)
+            .slice(0, 8)
             .map((item, index) => {
                 return (
                     <Grid item={true} xs={2} sm={4} sx={{ minWidth: 200 }} key={item.path}>
@@ -97,32 +96,6 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                             thumbnailUri={item.thumbnail_uri}
                             datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
                             isHidden={this.state.hiddenItems.find(privateItem => item.path === privateItem.path) != null}
-                            likes={item.likes}
-                            canDelete={true}
-                            overrideHidden={false}
-                            onDelete={this.itemDeleted} />
-                    </Grid>
-                )
-            })
-    };
-
-    renderHiddenItems() {
-        return this.state.hiddenItems
-            .filter(item => item.uri.endsWith(".mp4"))
-            //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
-            .slice(0, 4) // Remove this to show all items, to save bandwith in debugging..
-            .map((item, index) => {
-                return (
-                    <Grid item={true} xs={2} sm={4} key={item.path} sx={{ minWidth: 200 }}>
-                        <KleppVideoCard
-                            title={item.path.split("/").pop()!}
-                            owner={item.user.name}
-                            uri={item.uri}
-                            username={this.props.userName}
-                            fileName={item.path}
-                            thumbnailUri={item.thumbnail_uri}
-                            datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                            isHidden={true}
                             likes={item.likes}
                             canDelete={true}
                             overrideHidden={false}
@@ -158,18 +131,6 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                         }
                     </div>
                 </div>
-                {/*     {this.state.hiddenItems.length > 0 && <div style={{ marginTop: 16, paddingBottom: 16 }}>
-                    <Divider variant="middle" sx={{ height: 12, borderBottomWidth: 2 }} />
-                    <Typography variant="h4" color="white" sx={{ mt: 2, textAlign: 'left', ml: 2 }}>Mine private videoer</Typography>
-                    <div className="privateHiddenVideoGrid" style={{ marginTop: 12, marginLeft: 16, marginRight: 16 }}>
-                        {this.state.hiddenItems &&
-                            <Grid direction="row" container spacing={2} columns={16} key={"gridthree"}>
-                                {this.renderHiddenItems()}
-                            </Grid >
-                        }
-                    </div>
-                </div>
-                } */}
             </div>
         )
     }

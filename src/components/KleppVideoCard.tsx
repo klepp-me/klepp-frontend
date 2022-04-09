@@ -4,9 +4,10 @@ import { Alert, Card, CardContent, Snackbar, Stack, Tooltip, Typography } from "
 import { useState } from "react";
 import { API_CONFIG } from "../config/api_config";
 import useAuth from "../contexts/AuthContextProvider";
-import { KleppUser, KleppVideoLike } from "../models/KleppVideoModels";
+import { KleppUser, KleppVideoFile } from "../models/KleppVideoModels";
 import kleppVideoService from "../services/kleppvideoservice";
 import KleppVideoPlayer from "./KleppVideoPlayer";
+import { useNavigate } from "react-router-dom";
 
 interface KleppVideoCardProps {
     title: string,
@@ -34,6 +35,8 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     const [alertText, setAlertText] = useState("");
     const [isHidden, setIsHidden] = useState(props.isHidden)
     const [likes, setLikes] = useState(props.likes)
+
+    let navigate = useNavigate()
 
     const { accessToken } = useAuth();
 
@@ -112,19 +115,36 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         setOpen(false)
     }
 
+    function likeCounter() {
+        switch (likes.length) {
+            case 0:
+                return null;
+            default:
+                return <Typography variant="subtitle1" color='white' noWrap>{likes.length}</Typography>
+        }
+    }
+
+    async function openVideoClicked() {
+        navigate(`video?uri=${props.uri}`)
+    }
+
     function renderLike() {
         if (accessToken == null) {
             return null
         } else if (props.username && likes.map((user) => user.name).indexOf(props.username) !== -1) {
-            console.log("does have like")
-            return <Tooltip title="Unlike video">
-                <FavoriteOutlinedIcon sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => dislikeItem(props.fileName)} />
-            </Tooltip>
+            return <Stack direction="row" spacing={0.5} justifyContent="flex-end" >
+                <Tooltip title="Unlike video">
+                    <FavoriteOutlinedIcon sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} onClick={() => dislikeItem(props.fileName)} />
+                </Tooltip>
+                {likeCounter()}
+            </Stack >
         } else {
-            console.log("does not have like")
-            return <Tooltip title="Like video">
-                <FavoriteBorderOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => likeItem(props.fileName)} />
-            </Tooltip>
+            return <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                <Tooltip title="Like video">
+                    <FavoriteBorderOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} onClick={() => likeItem(props.fileName)} />
+                </Tooltip>
+                {likeCounter()}
+            </Stack >
         }
     }
 
@@ -148,10 +168,9 @@ function KleppVideoCard(props: KleppVideoCardProps) {
                     {alertText}
                 </Alert>
             </Snackbar>
-            <Typography variant="body1" color='white' noWrap>{props.title.replace(/\.[^/.]+$/, "")}</Typography>
+            <Typography variant="body1" color='white' sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} noWrap onClick={() => openVideoClicked()}>{props.title.replace(/\.[^/.]+$/, "")}</Typography>
             <Typography variant="body2" color="white" sx={{ mt: 1 }}>{props.owner}</Typography>
             <Typography variant="caption" color="white">{props.datetime}</Typography>
-            {props.likes && props.likes.map((user) => <Typography variant="caption">{user.name}</Typography>)}
         </CardContent>
     </Card>
     );

@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import theme from './styles/theme';
 import KleppVideoGrid from './components/KleppVideoGrid';
 import KleppFrontPage from './components/KleppFrontPage';
-import Amplify, { Auth } from 'aws-amplify';
+import { Amplify as Amplify} from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import { AMPLIFY_CONFIG } from './config/amplify_config';
 import useAuth from './contexts/AuthContextProvider';
@@ -23,7 +23,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login />} />
         <Route path='/upload' element={<UploadFile />} />
-        <Route path='/video' element={<KleppVideoPreview />} />
+        <Route path='/video' element={<KleppVideoPreview />}  />
       </Routes>
     </HashRouter>
   )

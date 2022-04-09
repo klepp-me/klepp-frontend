@@ -24,7 +24,7 @@ class KleppVideoService {
                 'Content-Type': 'application/json'
             },
             data: {
-                "file_name": fileName
+                "path": fileName
             }
         };
 
