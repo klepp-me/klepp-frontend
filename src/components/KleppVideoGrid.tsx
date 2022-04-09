@@ -66,9 +66,11 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                             owner={item.user.name}
                             uri={item.uri}
                             fileName={item.path}
+                            username={this.props.userName}
                             thumbnailUri={item.thumbnail_uri}
                             datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
                             canDelete={(this.props.userName != null && item.uploaded_at === this.props.userName)}
+                            likes={item.likes}
                             isHidden={false}
                             overrideHidden={true}
                             onDelete={() => this.itemDeleted(item.path)}
@@ -91,9 +93,11 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                             owner={item.user.name}
                             uri={item.uri}
                             fileName={item.path}
+                            username={this.props.userName}
                             thumbnailUri={item.thumbnail_uri}
                             datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
                             isHidden={this.state.hiddenItems.find(privateItem => item.path === privateItem.path) != null}
+                            likes={item.likes}
                             canDelete={true}
                             overrideHidden={false}
                             onDelete={this.itemDeleted} />
@@ -114,10 +118,12 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
                             title={item.path.split("/").pop()!}
                             owner={item.user.name}
                             uri={item.uri}
+                            username={this.props.userName}
                             fileName={item.path}
                             thumbnailUri={item.thumbnail_uri}
                             datetime={new Date(item.uploaded_at).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}
                             isHidden={true}
+                            likes={item.likes}
                             canDelete={true}
                             overrideHidden={false}
                             onDelete={this.itemDeleted} />

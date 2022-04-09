@@ -1,9 +1,11 @@
-import { DeleteOutlined, ShareOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { DeleteOutlined, FavoriteBorderOutlined, ShareOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import { Alert, Card, CardContent, Snackbar, Stack, Tooltip, Typography } from "@mui/material";
 import { useState } from "react";
 import { API_CONFIG } from "../config/api_config";
 import useAuth from "../contexts/AuthContextProvider";
-import uploadVideoService from "../services/upload-video-service";
+import { KleppUser, KleppVideoLike } from "../models/KleppVideoModels";
+import kleppVideoService from "../services/kleppvideoservice";
 import KleppVideoPlayer from "./KleppVideoPlayer";
 
 interface KleppVideoCardProps {
@@ -12,6 +14,8 @@ interface KleppVideoCardProps {
     uri: string,
     fileName: string,
     datetime: string,
+    likes: KleppUser[],
+    username?: string,
     canDelete: boolean,
     thumbnailUri: string,
     onDelete: (fileName: string) => void,
@@ -29,6 +33,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     const [open, setOpen] = useState(false);
     const [alertText, setAlertText] = useState("");
     const [isHidden, setIsHidden] = useState(props.isHidden)
+    const [likes, setLikes] = useState(props.likes)
 
     const { accessToken } = useAuth();
 
@@ -49,7 +54,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
     function deleteItem(file: string) {
         if (accessToken != null) {
-            uploadVideoService.delete<any, KleppVideoDeleteResponse>(file, accessToken).then((data) => {
+            kleppVideoService.delete<any, KleppVideoDeleteResponse>(file, accessToken).then((data) => {
                 props.onDelete(data.data.fileName)
                 setAlertText("File deleted!")
             }).catch(() => {
@@ -65,12 +70,36 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
     function toggleItemVisibility(isVisible: boolean, fileName: string) {
         if (accessToken != null) {
-            uploadVideoService.hide(!isVisible, fileName, accessToken).then(() => {
+            kleppVideoService.hide(!isVisible, fileName, accessToken).then(() => {
                 setIsHidden(!isVisible)
             }).catch((err) => {
                 setAlertText("Could not update visibility")
                 openAlertClicked()
             }).finally(() => {
+            })
+        }
+    }
+
+    function likeItem(path: string) {
+        if (accessToken != null) {
+            kleppVideoService.like(path, accessToken).then((data) => {
+                setLikes(data.data.likes)
+            }).catch((err) => {
+                setAlertText("Could not like video")
+                openAlertClicked()
+                console.log(err)
+            })
+        }
+    }
+
+    function dislikeItem(path: string) {
+        if (accessToken != null) {
+            kleppVideoService.dislike(path, accessToken).then((data) => {
+                setLikes(data.data.likes)
+            }).catch((err) => {
+                setAlertText("Could not like video")
+                openAlertClicked()
+                console.log(err)
             })
         }
     }
@@ -83,6 +112,22 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         setOpen(false)
     }
 
+    function renderLike() {
+        if (accessToken == null) {
+            return null
+        } else if (props.username && likes.map((user) => user.name).indexOf(props.username) !== -1) {
+            console.log("does have like")
+            return <Tooltip title="Unlike video">
+                <FavoriteOutlinedIcon sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => dislikeItem(props.fileName)} />
+            </Tooltip>
+        } else {
+            console.log("does not have like")
+            return <Tooltip title="Like video">
+                <FavoriteBorderOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => likeItem(props.fileName)} />
+            </Tooltip>
+        }
+    }
+
     return (<Card square={true} elevation={2} key={props.datetime.toString()}>
         <KleppVideoPlayer embedUrl={props.uri} thumbnailUri={props.thumbnailUri} />
         <CardContent sx={{ '&:last-child': { paddingBottom: '16px' }, paddingTop: 1 }}>
@@ -90,6 +135,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
                 {props.canDelete && <Tooltip title="Slett video">
                     <DeleteOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => deleteItem(props.fileName)} />
                 </Tooltip>}
+                {renderLike()}
                 <Tooltip title="Del video">
                     <ShareOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#004d40' }} onClick={() => copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${props.uri}`)} />
                 </Tooltip>
@@ -105,6 +151,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
             <Typography variant="body1" color='white' noWrap>{props.title.replace(/\.[^/.]+$/, "")}</Typography>
             <Typography variant="body2" color="white" sx={{ mt: 1 }}>{props.owner}</Typography>
             <Typography variant="caption" color="white">{props.datetime}</Typography>
+            {props.likes && props.likes.map((user) => <Typography variant="caption">{user.name}</Typography>)}
         </CardContent>
     </Card>
     );

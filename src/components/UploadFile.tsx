@@ -2,7 +2,7 @@ import { Alert, Button, LinearProgress, Snackbar, ThemeProvider, Typography } fr
 import { useState } from "react";
 import { API_CONFIG } from "../config/api_config";
 import useAuth from "../contexts/AuthContextProvider";
-import uploadVideoService from "../services/upload-video-service";
+import kleppVideoService from "../services/kleppvideoservice";
 import theme from "../styles/theme";
 import Header from "./Header";
 
@@ -50,14 +50,14 @@ function UploadFile() {
         if (selectedFile[0] && accessToken) {
             setProgress(0)
             setIsUploading(true)
-            uploadVideoService.upload<KleppFileResponse>(selectedFile[0], accessToken, (event: ProgressEvent<EventTarget>) => {
+            kleppVideoService.upload<KleppFileResponse>(selectedFile[0], accessToken, (event: ProgressEvent<EventTarget>) => {
                 setProgress(Math.round((100 * event.loaded) / event.total))
             }).then((res) => {
                 setProgress(0)
                 copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${res.data.uri}`);
                 setMessage("Upload complete, check it out on the frontpage!");
                 setIsUploading(false)
-            }).catch(() => {
+            }).catch((e) => {
                 setProgress(0)
                 setMessage("Could not upload file")
                 setSelectedFile(null)

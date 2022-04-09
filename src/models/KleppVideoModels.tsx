@@ -38,6 +38,6 @@ export interface KleppVideoPatch {
     tags?: KleppVideoTag[]
 }
 
-export interface VideoLike {
+export interface KleppVideoLike {
     path: string
 }
