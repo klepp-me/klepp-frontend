@@ -25,3 +25,19 @@ export interface KleppUser {
 export interface KleppVideoTag {
     name: string
 }
+
+export interface KleppVideoTags {
+    total_count: number,
+    response: KleppVideoTag[]
+}
+
+export interface KleppVideoPatch {
+    path: string,
+    display_name?: string,
+    hidden?: boolean,
+    tags?: KleppVideoTag[]
+}
+
+export interface VideoLike {
+    path: string
+}
