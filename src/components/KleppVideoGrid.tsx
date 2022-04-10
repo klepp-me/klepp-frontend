@@ -12,7 +12,6 @@ interface KleppVideoGridItemsProps {
 
 interface KleppVideoGridItemsState {
     items: KleppVideoFile[],
-    hiddenItems: KleppVideoFile[]
 }
 
 interface KleppVideoFilesResponse {
@@ -25,7 +24,6 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         super(props);
         this.state = {
             items: [],
-            hiddenItems: []
         }
     }
 
@@ -37,7 +35,6 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
         axios.get<KleppVideoFilesResponse>(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`, config).then(res => {
             this.setState({
                 items: res.data.response,
-                hiddenItems: []
             })
         }).catch(e => {
             console.error(e);
@@ -47,17 +44,15 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     itemDeleted = (fileName: string) => {
         this.setState(prevState => ({
             items: prevState.items.filter(item => item.path !== fileName),
-            hiddenItems: prevState.hiddenItems.filter(item => item.path !== fileName)
         }))
     };
 
 
     renderItems() {
         return this.state.items
-            .filter(item => item.uri.endsWith(".mp4")) // Done in aws
-            //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
+            .filter(item => item.uri.endsWith(".mp4")) // Maybe redundant. Done in aws
             .slice(0, 12)
-            .map((item, index, key) => {
+            .map((item) => {
                 return (
                     <Grid item={true} xs={2} sm={4} key={item.path} sx={{ minWidth: 200 }}>
                         <KleppVideoCard
@@ -76,7 +71,6 @@ export default class KleppVideoGrid extends React.Component<KleppVideoGridItemsP
     renderOwnItems() {
         return this.state.items
             .filter(item => item.uri.endsWith(".mp4") && item.path.includes(this.props.userName!))
-            //.sort((a, b) => Date.parse(a.uploaded_at) - Date.parse(b.uploaded_at)).reverse() # Done server-side
             .slice(0, 8)
             .map((item, index) => {
                 return (
