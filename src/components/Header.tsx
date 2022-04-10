@@ -1,9 +1,9 @@
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import { Box, IconButton, Tooltip, Typography } from '@mui/material';
-import useAuth from '../contexts/AuthContextProvider';
-import { useNavigate } from 'react-router-dom';
 import { LoginOutlined, LogoutOutlined, UploadOutlined } from '@mui/icons-material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import { useNavigate } from 'react-router-dom';
+import useAuth from '../contexts/AuthContextProvider';
 import HideOnScroll from './utils/HideOnScroll';
 
 function Header() {
@@ -28,8 +28,11 @@ function Header() {
                 <HideOnScroll>
                     <AppBar position="fixed" elevation={4}>
                         <Toolbar variant="regular">
-                            <Typography variant="h6" color="inherit" component="div" sx={{ textAlign: 'left', flexGrow: 1, "&:hover": { 'cursor': 'pointer' } }} onClick={navigateToHome}>
-                                Klepp
+                            <Typography variant="h6" color="inherit" flexGrow="1" component="div" sx={{ textAlign: 'left', "&:hover": { 'cursor': 'pointer' } }} onClick={navigateToHome}>
+                                <div className="frontPage" style={{ paddingTop: 16, paddingBottom: 16, display: 'flex', 'alignItems': 'center' }}>
+                                    <img src="../assets/kleppwhite.png" alt="klepp-frontend-logo" width="40" height="44" style={{ marginRight: '16px', marginTop: 'auto' }} />
+                                    <span>Klepp</span>
+                                </div>
                             </Typography>
                             <Tooltip title="Last opp fil">
                                 <IconButton onClick={navigateToUpload} color="secondary" sx={{ "&:hover": { 'color': '#39796b', 'cursor': 'pointer' } }}> <UploadOutlined />

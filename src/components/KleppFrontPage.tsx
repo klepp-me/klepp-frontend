@@ -13,8 +13,7 @@ export default class KleppFrontPage extends React.Component<KleppFrontPageProps>
 
     render() {
         return (
-            <div className="frontPage" style={{ paddingTop: 20 }}>
-                <img src={this.props.logo} alt="klepp-frontend-logo" width="120" height="115" />
+            <div className="frontPage" style={{ paddingTop: 16 }}>
             </div>
         )
     }
