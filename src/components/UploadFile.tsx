@@ -52,6 +52,7 @@ function UploadFile() {
             setIsUploading(true)
             kleppVideoService.upload<KleppFileResponse>(selectedFile[0], accessToken, (event: ProgressEvent<EventTarget>) => {
                 setProgress(Math.round((100 * event.loaded) / event.total))
+                setMessage("")  // In case they had an error on first attempt, clear the error
             }).then((res) => {
                 setProgress(0)
                 copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${res.data.uri}`);
@@ -59,7 +60,7 @@ function UploadFile() {
                 setIsUploading(false)
             }).catch((e) => {
                 setProgress(0)
-                setMessage("Could not upload file")
+                setMessage(`Could not upload file. ${e.response.data.detail}`)
                 setSelectedFile(null)
                 setIsUploading(false)
             });
