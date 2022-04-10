@@ -1,7 +1,11 @@
-import http from "../http-common";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { API_CONFIG } from "../config/api_config";
-import { KleppVideoFile } from "../models/KleppVideoModels";
+import http from "../http-common";
+import { KleppVideoFile, KleppVideoPatch } from "../models/KleppVideoModels";
+
+interface patchData {
+    [key: string]: any
+}
 
 class KleppVideoService {
     upload<T = any, R = AxiosResponse<T>>(file: any, accessToken: string, onUploadProgress: (event: ProgressEvent<EventTarget>) => void) {
@@ -35,7 +39,6 @@ class KleppVideoService {
         const fileNameArr = fileName.split("/");
         if (!hide) {
             fileName = `${fileNameArr[0]}/hidden/${fileNameArr[2]}`
-            console.log(fileName)
         }
 
         const config: AxiosRequestConfig = {
@@ -88,6 +91,36 @@ class KleppVideoService {
         const pathComponent = API_CONFIG.likePath
 
         return axios.delete<T, R>(`${API_CONFIG.baseUrl}${pathComponent}`, config)
+    }
+
+    updateVideoAttrs<T = any, R = AxiosResponse<KleppVideoFile>>(accessToken: string, attrs: KleppVideoPatch) {
+        const config: AxiosRequestConfig = {
+            headers: {
+                "accept": "application/json",
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${accessToken}`,
+            }
+        };
+
+        var data: patchData = {};
+
+        data["path"] = attrs.path
+
+        if (attrs.hidden != null) {
+            data["hidden"] = attrs.hidden
+        }
+
+        if (attrs.display_name != null) {
+            data["display_name"] = attrs.display_name
+        }
+
+        if (attrs.tags != null) {
+            data["tags"] = attrs.tags
+        }
+
+        const pathComponent = API_CONFIG.filesPath
+
+        return axios.patch<T, R>(`${API_CONFIG.baseUrl}${pathComponent}`, data, config)
     }
 }
 
