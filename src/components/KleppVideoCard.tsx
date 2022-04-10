@@ -128,6 +128,24 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         }
     }
 
+    function tooltipLikes(shouldLike: boolean) {
+        const numLikes = likes.length
+        switch (true) {
+            case (numLikes == 0):
+                if (shouldLike) {
+                    return "Like video"
+                } else {
+                    return "Dislike video"
+                }
+            case (numLikes <= 5):
+                return likes.map((like) => like.name).join(", ")
+            case (numLikes > 5):
+                return likes.map((like) => like.name).slice(0, 5).push("++")
+            default:
+                return ""
+        }
+    }
+
     async function openVideoClicked() {
         navigate(`video?uri=${props.file.uri}`)
     }
@@ -135,14 +153,14 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     function renderLike() {
         if (props.username && likes.map((user) => user.name).indexOf(props.username) !== -1) {
             return <Stack direction="row" spacing={0.5} justifyContent="flex-end" >
-                <Tooltip title="Unlike video">
+                <Tooltip title={tooltipLikes(false)}>
                     <FavoriteOutlinedIcon sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} onClick={() => dislikeItem(props.file.path)} />
                 </Tooltip>
                 {likeCounter()}
             </Stack >
         } else {
             return <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                <Tooltip title="Like video">
+                <Tooltip title={tooltipLikes(true)}>
                     <FavoriteBorderOutlined sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} onClick={() => likeItem(props.file.path)} />
                 </Tooltip>
                 {likeCounter()}
