@@ -188,7 +188,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
                     {alertText}
                 </Alert>
             </Snackbar>
-            <Typography variant="body1" color='white' sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} noWrap onClick={() => openVideoClicked()}>{props.file.display_name.replace(/\.[^/.]+$/, "")}</Typography>
+            <Typography variant="body1" color='white' sx={{ "&:hover": { 'cursor': 'pointer', color: '#39796b' }, mb: 1, color: '#ffffff' }} noWrap onClick={() => openVideoClicked()}>{props.file.display_name}</Typography>
             <Typography variant="body2" color="white" sx={{ mt: 1 }}>{props.file.user.name}</Typography>
             <Typography variant="caption" color="white">{props.datetime}</Typography>
         </CardContent>
