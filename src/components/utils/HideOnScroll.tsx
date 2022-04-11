@@ -1,6 +1,12 @@
 import { Slide, useScrollTrigger } from "@mui/material"
+import * as React from "react"
 
-function HideOnScroll(props: any) {
+interface Props {
+  window?: () => Window
+  children: React.ReactElement
+}
+
+function HideOnScroll(props: Props) {
   const { children, window } = props
   // Note that you normally won't need to set the window ref as useScrollTrigger
   // will default to window.

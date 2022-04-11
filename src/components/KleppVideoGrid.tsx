@@ -92,10 +92,12 @@ export default class KleppVideoGrid extends React.Component<
     return this.state.items
       .filter(
         item =>
-          item.uri.endsWith(".mp4") && item.path.includes(this.props.userName!)
+          item.uri.endsWith(".mp4") &&
+          this.props.userName &&
+          item.path.includes(this.props.userName)
       )
       .slice(0, 8)
-      .map((item, index) => {
+      .map(item => {
         return (
           <Grid
             item={true}
@@ -105,7 +107,6 @@ export default class KleppVideoGrid extends React.Component<
             key={item.path}>
             <KleppVideoCard
               file={item}
-              username={this.props.userName}
               datetime={new Date(item.uploaded_at).toLocaleDateString("nb-NO", {
                 day: "numeric",
                 month: "short",

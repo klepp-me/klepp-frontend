@@ -2,9 +2,10 @@ import { HubPayload } from "@aws-amplify/core"
 import { Auth, Hub } from "aws-amplify"
 
 import { useEffect, useState } from "react"
+import { CognitoUser } from "amazon-cognito-identity-js"
 
 export default function useAuth() {
-  const [user, setUser] = useState<any>()
+  const [user, setUser] = useState<CognitoUser | null | undefined>()
   const [accessToken, setAccessToken] = useState<string>()
   const [userName, setUserName] = useState<string>()
 

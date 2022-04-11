@@ -1,21 +1,23 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import { API_CONFIG } from "../config/api_config"
 import http from "../http-common"
-import { KleppVideoFile, KleppVideoPatch } from "../models/KleppVideoModels"
+import {
+  KleppVideoFile,
+  KleppVideoPatch,
+  KleppVideoDeleteResponse,
+} from "../models/KleppVideoModels"
 
-interface patchData {
-  [key: string]: any
-}
+type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
 
 class KleppVideoService {
-  upload<T = any, R = AxiosResponse<T>>(
-    file: any,
+  upload(
+    file: File,
     accessToken: string,
     onUploadProgress: (event: ProgressEvent<EventTarget>) => void
-  ) {
+  ): VideoResponse {
     const formData = new FormData()
     formData.append("file", file)
-    return http.post<T, R>("/files", formData, {
+    return http.post<KleppVideoFile>("/files", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${accessToken}`,
@@ -24,7 +26,10 @@ class KleppVideoService {
     })
   }
 
-  delete<T = any, R = AxiosResponse<T>>(fileName: string, accessToken: string) {
+  delete(
+    fileName: string,
+    accessToken: string
+  ): Promise<AxiosResponse<KleppVideoDeleteResponse>> {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -36,49 +41,13 @@ class KleppVideoService {
       },
     }
 
-    return axios.delete<T, R>(
+    return axios.delete<KleppVideoDeleteResponse>(
       `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`,
       config
     )
   }
 
-  hide<T = any, R = AxiosResponse<T>>(
-    hide: boolean,
-    fileName: string,
-    accessToken: string
-  ) {
-    const fileNameArr = fileName.split("/")
-    if (!hide) {
-      fileName = `${fileNameArr[0]}/hidden/${fileNameArr[2]}`
-    }
-
-    const config: AxiosRequestConfig = {
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-
-    const data = {
-      fileName: fileName,
-    }
-
-    const pathComponent = hide
-      ? API_CONFIG.hideFilePath
-      : API_CONFIG.showFilePath
-
-    return axios.post<T, R>(
-      `${API_CONFIG.baseUrl}${pathComponent}`,
-      data,
-      config
-    )
-  }
-
-  like<T = any, R = AxiosResponse<KleppVideoFile>>(
-    path: string,
-    accessToken: string
-  ) {
+  like(path: string, accessToken: string): VideoResponse {
     const config: AxiosRequestConfig = {
       headers: {
         accept: "application/json",
@@ -93,17 +62,14 @@ class KleppVideoService {
 
     const pathComponent = API_CONFIG.likePath
 
-    return axios.post<T, R>(
+    return axios.post<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
       data,
       config
     )
   }
 
-  dislike<T = any, R = AxiosResponse<KleppVideoFile>>(
-    path: string,
-    accessToken: string
-  ) {
+  dislike(path: string, accessToken: string): VideoResponse {
     const config: AxiosRequestConfig = {
       headers: {
         accept: "application/json",
@@ -117,13 +83,13 @@ class KleppVideoService {
 
     const pathComponent = API_CONFIG.likePath
 
-    return axios.delete<T, R>(`${API_CONFIG.baseUrl}${pathComponent}`, config)
+    return axios.delete<KleppVideoFile>(
+      `${API_CONFIG.baseUrl}${pathComponent}`,
+      config
+    )
   }
 
-  updateVideoAttrs<T = any, R = AxiosResponse<KleppVideoFile>>(
-    accessToken: string,
-    attrs: KleppVideoPatch
-  ) {
+  updateVideoAttrs(accessToken: string, attrs: KleppVideoPatch): VideoResponse {
     const config: AxiosRequestConfig = {
       headers: {
         accept: "application/json",
@@ -132,27 +98,11 @@ class KleppVideoService {
       },
     }
 
-    const data: patchData = {}
-
-    data["path"] = attrs.path
-
-    if (attrs.hidden != null) {
-      data["hidden"] = attrs.hidden
-    }
-
-    if (attrs.display_name != null) {
-      data["display_name"] = attrs.display_name
-    }
-
-    if (attrs.tags != null) {
-      data["tags"] = attrs.tags
-    }
-
     const pathComponent = API_CONFIG.filesPath
 
-    return axios.patch<T, R>(
+    return axios.patch<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      data,
+      attrs,
       config
     )
   }

@@ -85,7 +85,7 @@ function Header() {
                     color='white'
                     component='div'
                     sx={{ textAlign: "left", flexGrow: 1, ml: 1 }}>
-                    {user.username}
+                    {user.getUsername()}
                   </Typography>
                 </IconButton>
               </Tooltip>

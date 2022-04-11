@@ -40,3 +40,7 @@ export interface KleppVideoPatch {
 export interface KleppVideoLike {
   path: string
 }
+
+export interface KleppVideoDeleteResponse {
+  path: string
+}

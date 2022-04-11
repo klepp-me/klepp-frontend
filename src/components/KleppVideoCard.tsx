@@ -32,12 +32,6 @@ interface KleppVideoCardProps {
   overrideHidden: boolean
 }
 
-interface KleppVideoDeleteResponse {
-  data: {
-    fileName: string
-  }
-}
-
 function KleppVideoCard(props: KleppVideoCardProps) {
   const [open, setOpen] = useState(false)
   const [alertText, setAlertText] = useState("")
@@ -69,9 +63,9 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   function deleteItem(file: string) {
     if (accessToken != null) {
       kleppVideoService
-        .delete<any, KleppVideoDeleteResponse>(file, accessToken)
+        .delete(file, accessToken)
         .then(data => {
-          props.onDelete(data.data.fileName)
+          props.onDelete(data.data.path)
           setAlertText("File deleted!")
         })
         .catch(() => {
@@ -98,11 +92,10 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         .then(data => {
           setIsHidden(data.data.hidden)
         })
-        .catch(err => {
+        .catch(() => {
           setAlertText("Could not update visibility")
           openAlertClicked()
         })
-        .finally(() => {})
     }
   }
 
@@ -113,7 +106,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         .then(data => {
           setLikes(data.data.likes)
         })
-        .catch(err => {
+        .catch(() => {
           setAlertText("Could not like video")
           openAlertClicked()
         })
@@ -130,7 +123,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         .then(data => {
           setLikes(data.data.likes)
         })
-        .catch(err => {
+        .catch(() => {
           setAlertText("Could not like video")
           openAlertClicked()
         })
@@ -188,8 +181,8 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
   function renderLike() {
     if (
-      props.username &&
-      likes.map(user => user.name).indexOf(props.username) !== -1
+      props.file.user.name &&
+      likes.map(user => user.name).indexOf(props.file.user.name) !== -1
     ) {
       return (
         <Stack direction='row' spacing={0.5} justifyContent='flex-end'>

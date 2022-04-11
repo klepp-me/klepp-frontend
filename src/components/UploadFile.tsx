@@ -13,16 +13,9 @@ import kleppVideoService from "../services/kleppvideoservice"
 import theme from "../styles/theme"
 import Header from "./Header"
 
-interface KleppFileResponse {
-  fileName: string
-  uri: string
-  datetime: string
-  username: string
-}
-
 function UploadFile() {
   const { user, accessToken } = useAuth()
-  const [selectedFile, setSelectedFile] = useState<any>()
+  const [selectedFile, setSelectedFile] = useState<FileList | null>()
   const [progress, setProgress] = useState(0)
   const [message, setMessage] = useState("")
   const [isUploading, setIsUploading] = useState(false)
@@ -96,11 +89,11 @@ function UploadFile() {
   )
 
   function uploadSelectedFile() {
-    if (selectedFile[0] && accessToken) {
+    if (selectedFile && selectedFile[0] && accessToken) {
       setProgress(0)
       setIsUploading(true)
       kleppVideoService
-        .upload<KleppFileResponse>(
+        .upload(
           selectedFile[0],
           accessToken,
           (event: ProgressEvent<EventTarget>) => {

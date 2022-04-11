@@ -25,7 +25,7 @@ function Login() {
     <ThemeProvider theme={theme}>
       <div style={{ margin: 20 }} className='AuthContainer'>
         <Authenticator signUpAttributes={["email"]} components={authComponents}>
-          {({ user, signOut }) => <></>}
+          {() => <></>}
         </Authenticator>
       </div>
     </ThemeProvider>
