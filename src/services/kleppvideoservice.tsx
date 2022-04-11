@@ -5,6 +5,11 @@ import {
   KleppVideoFile,
   KleppVideoPatch,
   KleppVideoDeleteResponse,
+  KleppVideoFilesResponse,
+  KleppUser,
+  KleppUserResponse,
+  KleppVideoTag,
+  KleppVideoTagsResponse,
 } from "../models/KleppVideoModels"
 
 type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
@@ -24,6 +29,52 @@ class KleppVideoService {
       },
       onUploadProgress,
     })
+  }
+
+  getFiles(
+    query: string,
+    accessToken?: string
+  ): Promise<AxiosResponse<KleppVideoFilesResponse>> {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+
+    console.log(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`)
+
+    return axios.get<KleppVideoFilesResponse>(
+      `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`,
+      config
+    )
+  }
+
+  getUsers(accessToken?: string): Promise<AxiosResponse<KleppUserResponse>> {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+
+    return axios.get<KleppUserResponse>(
+      `${API_CONFIG.baseUrl}${API_CONFIG.usersPath}`,
+      config
+    )
+  }
+
+  getTags(
+    accessToken?: string
+  ): Promise<AxiosResponse<KleppVideoTagsResponse>> {
+    const config = this.getDefaultHeaders(accessToken)
+
+    return axios.get<KleppVideoTagsResponse>(
+      `${API_CONFIG.baseUrl}${API_CONFIG.tagsPath}`,
+      config
+    )
   }
 
   delete(
@@ -105,6 +156,16 @@ class KleppVideoService {
       attrs,
       config
     )
+  }
+
+  getDefaultHeaders(accessToken?: string) {
+    return {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
   }
 }
 

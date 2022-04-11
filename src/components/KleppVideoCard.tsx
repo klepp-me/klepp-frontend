@@ -29,7 +29,7 @@ interface KleppVideoCardProps {
   username?: string
   canDelete: boolean
   onDelete: (fileName: string) => void
-  overrideHidden: boolean
+  canHide: boolean
 }
 
 function KleppVideoCard(props: KleppVideoCardProps) {
@@ -40,7 +40,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
   const navigate = useNavigate()
 
-  const { accessToken } = useAuth()
+  const { accessToken, userName } = useAuth()
 
   function getVisibilityString(hidden: boolean) {
     return hidden ? "Vis video" : "Skjul video"
@@ -180,10 +180,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   function renderLike() {
-    if (
-      props.file.user.name &&
-      likes.map(user => user.name).indexOf(props.file.user.name) !== -1
-    ) {
+    if (userName && likes.map(user => user.name).indexOf(userName) !== -1) {
       return (
         <Stack direction='row' spacing={0.5} justifyContent='flex-end'>
           <Tooltip title={tooltipLikes(false)}>
@@ -254,7 +251,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
               }
             />
           </Tooltip>
-          {!props.overrideHidden && (
+          {props.canHide && (
             <Tooltip title={getVisibilityString(isHidden)}>
               {!isHidden ? (
                 <VisibilityOff

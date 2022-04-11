@@ -1,8 +1,8 @@
-import { Divider, Grid, Typography } from "@mui/material"
-import axios from "axios"
-import React from "react"
-import { API_CONFIG } from "../config/api_config"
+import { Autocomplete, Grid, TextField, Typography } from "@mui/material"
+import React, { SyntheticEvent, useEffect, useState } from "react"
+import useAuth from "../contexts/AuthContextProvider"
 import { KleppVideoFile } from "../models/KleppVideoModels"
+import kleppvideoservice from "../services/kleppvideoservice"
 import KleppVideoCard from "./KleppVideoCard"
 
 interface KleppVideoGridItemsProps {
@@ -10,54 +10,140 @@ interface KleppVideoGridItemsProps {
   userName?: string
 }
 
-interface KleppVideoGridItemsState {
-  items: KleppVideoFile[]
+interface AutocompleteOption {
+  label: string
 }
 
-interface KleppVideoFilesResponse {
-  total_count: number
-  response: KleppVideoFile[]
+interface QueryType {
+  query: string
+  type: VIDEO_QUERY_TYPE
 }
 
-export default class KleppVideoGrid extends React.Component<
-  KleppVideoGridItemsProps,
-  KleppVideoGridItemsState
-> {
-  constructor(props: KleppVideoGridItemsProps) {
-    super(props)
-    this.state = {
-      items: [],
+enum VIDEO_QUERY_TYPE {
+  USERNAME,
+  TAG,
+}
+
+function KleppVideoGrid(props: KleppVideoGridItemsProps) {
+  const [items, setItems] = useState<KleppVideoFile[]>([])
+  const [users, setUsers] = useState<AutocompleteOption[]>([])
+  const [tags, setTags] = useState<AutocompleteOption[]>([])
+  const [userNameQuery, setUserNameQuery] = useState<QueryType>({
+    query: "",
+    type: VIDEO_QUERY_TYPE.USERNAME,
+  })
+  const [tagsQuery, setTagsQuery] = useState<QueryType>({
+    query: "",
+    type: VIDEO_QUERY_TYPE.TAG,
+  })
+
+  const { userName } = useAuth()
+
+  const handleUsernameSearch = (
+    event: SyntheticEvent<Element, Event>,
+    value: string | null
+  ) => {
+    const queryString = value != null ? value : ""
+    const query: QueryType = {
+      query: queryString,
+      type: VIDEO_QUERY_TYPE.USERNAME,
+    }
+    setUserNameQuery(query)
+  }
+
+  const handleTagsSearch = (
+    event: SyntheticEvent<Element, Event>,
+    value: string | null
+  ) => {
+    const queryString = value != null ? value : ""
+    const query: QueryType = {
+      query: queryString,
+      type: VIDEO_QUERY_TYPE.TAG,
+    }
+    setTagsQuery(query)
+  }
+
+  useEffect(() => {
+    fetchItems()
+    fetchUsers()
+    fetchTags()
+  }, [userNameQuery, tagsQuery])
+
+  function fetchItems() {
+    let queryParams = [userNameQuery, tagsQuery]
+    queryParams = queryParams.filter(query => query.query !== "")
+
+    if (queryParams.length == 0) {
+      kleppvideoservice
+        .getFiles(``, props.accessToken)
+        .then(res => {
+          setItems(res.data.response)
+        })
+        .catch(e => {
+          console.error(e)
+        })
+    } else {
+      let queryString = "?"
+      queryParams.forEach(query => {
+        switch (+query.type) {
+          case VIDEO_QUERY_TYPE.USERNAME:
+            queryString = queryString.concat(`username=${query.query}&`)
+            break
+          case VIDEO_QUERY_TYPE.TAG:
+            queryString = queryString.concat(`tag=${query.query}`)
+            break
+          default:
+            break
+        }
+      })
+      kleppvideoservice
+        .getFiles(queryString, props.accessToken)
+        .then(res => {
+          setItems(res.data.response)
+        })
+        .catch(e => {
+          console.error(e)
+        })
     }
   }
 
-  componentDidMount() {
-    const config = {
-      headers: { Authorization: `Bearer ${this.props.accessToken}` },
-    }
-
-    axios
-      .get<KleppVideoFilesResponse>(
-        `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`,
-        config
-      )
+  function fetchUsers() {
+    kleppvideoservice
+      .getUsers(props.accessToken)
       .then(res => {
-        this.setState({
-          items: res.data.response,
-        })
+        setUsers(res.data.response.map(user => toAutoCompleteOption(user.name)))
       })
       .catch(e => {
         console.error(e)
       })
   }
 
-  itemDeleted = (fileName: string) => {
-    this.setState(prevState => ({
-      items: prevState.items.filter(item => item.path !== fileName),
+  function fetchTags() {
+    kleppvideoservice
+      .getTags(props.accessToken)
+      .then(res => {
+        setTags(res.data.response.map(tag => toAutoCompleteOption(tag.name)))
+      })
+      .catch(e => {
+        console.error(e)
+      })
+  }
+
+  const toAutoCompleteOption = (input: string): AutocompleteOption => {
+    return {
+      label: input,
+    }
+  }
+
+  function itemDeleted(fileName: string) {
+    console.log("deleted video callback")
+    setItems(prevState => ({
+      ...prevState.filter(item => item.path !== fileName),
     }))
   }
 
-  renderItems() {
-    return this.state.items
+  function renderItems() {
+    return items
       .filter(item => item.uri.endsWith(".mp4")) // Maybe redundant. Done in aws
       .slice(0, 12)
       .map(item => {
@@ -70,113 +156,71 @@ export default class KleppVideoGrid extends React.Component<
             sx={{ minWidth: 200 }}>
             <KleppVideoCard
               file={item}
-              username={this.props.userName}
+              username={props.userName}
               datetime={new Date(item.uploaded_at).toLocaleDateString("nb-NO", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
               })}
-              canDelete={
-                this.props.userName != null &&
-                item.uploaded_at === this.props.userName
-              }
-              overrideHidden={true}
-              onDelete={() => this.itemDeleted(item.path)}
+              canDelete={userName != null && item.user.name === userName}
+              canHide={userName != null && item.user.name === userName}
+              onDelete={() => itemDeleted(item.path)}
             />
           </Grid>
         )
       })
   }
 
-  renderOwnItems() {
-    return this.state.items
-      .filter(
-        item =>
-          item.uri.endsWith(".mp4") &&
-          this.props.userName &&
-          item.path.includes(this.props.userName)
-      )
-      .slice(0, 8)
-      .map(item => {
-        return (
+  return (
+    <div style={{ marginTop: 24, paddingBottom: 16 }}>
+      <div className='filterGrid' style={{ marginLeft: 24 }}>
+        <Autocomplete
+          disablePortal
+          id='autocomplete-box-username'
+          options={users.map(user => user.label)}
+          onChange={handleUsernameSearch}
+          sx={{ width: 300 }}
+          renderInput={params => (
+            <TextField
+              {...params}
+              color='secondary'
+              label='Søk etter brukernavn'
+            />
+          )}
+        />
+        <Autocomplete
+          disablePortal
+          id='autocomplete-box-tags'
+          options={tags.map(tag => tag.label)}
+          onChange={handleTagsSearch}
+          sx={{ width: 300 }}
+          renderInput={params => (
+            <TextField {...params} color='secondary' label='Søk etter tags' />
+          )}
+        />
+      </div>
+      <Typography
+        variant='h4'
+        color='white'
+        sx={{ mt: 2, textAlign: "left", ml: 2 }}>
+        Nyeste videoer
+      </Typography>
+      <div
+        className='videoGrid'
+        style={{ marginTop: 12, marginLeft: 16, marginRight: 16 }}>
+        {items && (
           <Grid
-            item={true}
-            xs={2}
-            sm={4}
-            sx={{ minWidth: 200 }}
-            key={item.path}>
-            <KleppVideoCard
-              file={item}
-              datetime={new Date(item.uploaded_at).toLocaleDateString("nb-NO", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-              canDelete={true}
-              overrideHidden={false}
-              onDelete={this.itemDeleted}
-            />
+            direction='row'
+            container
+            spacing={2}
+            columns={16}
+            key={"kleppVideoGrid"}>
+            {renderItems()}
           </Grid>
-        )
-      })
-  }
-
-  render() {
-    if (!this.props.accessToken || !this.props.userName)
-      return (
-        <div style={{ marginTop: 24, paddingBottom: 16 }}>
-          <Typography
-            variant='h4'
-            color='white'
-            sx={{ mt: 2, textAlign: "left", ml: 2 }}>
-            Nyeste videoer
-          </Typography>
-          <div
-            className='videoGrid'
-            style={{ marginTop: 12, marginLeft: 16, marginRight: 16 }}>
-            {this.state.items && (
-              <Grid
-                direction='row'
-                container
-                spacing={2}
-                columns={16}
-                key={"gridone"}>
-                {this.renderItems()}
-              </Grid>
-            )}
-          </div>
-        </div>
-      )
-    else
-      return (
-        <div style={{ paddingBottom: 8 }}>
-          <div style={{ marginTop: 16, paddingBottom: 16 }}>
-            <Divider
-              variant='middle'
-              sx={{ height: 12, borderBottomWidth: 2 }}
-            />
-            <Typography
-              variant='h4'
-              color='white'
-              sx={{ mt: 2, textAlign: "left", ml: 2 }}>
-              Mine videoer
-            </Typography>
-            <div
-              className='privateVideoGrid'
-              style={{ marginTop: 12, marginLeft: 16, marginRight: 16 }}>
-              {this.state.items && (
-                <Grid
-                  direction='row'
-                  container
-                  spacing={2}
-                  columns={16}
-                  key={"gridtwo"}>
-                  {this.renderOwnItems()}
-                </Grid>
-              )}
-            </div>
-          </div>
-        </div>
-      )
-  }
+        )}
+      </div>
+    </div>
+  )
 }
+
+export default KleppVideoGrid

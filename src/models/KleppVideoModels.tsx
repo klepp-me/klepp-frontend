@@ -21,13 +21,13 @@ export interface KleppUser {
   thumbnail_uri: string
 }
 
-export interface KleppVideoTag {
-  name: string
+export interface KleppUserResponse {
+  total_count: number
+  response: KleppUser[]
 }
 
-export interface KleppVideoTags {
-  total_count: number
-  response: KleppVideoTag[]
+export interface KleppVideoTag {
+  name: string
 }
 
 export interface KleppVideoPatch {
@@ -43,4 +43,14 @@ export interface KleppVideoLike {
 
 export interface KleppVideoDeleteResponse {
   path: string
+}
+
+export interface KleppVideoFilesResponse {
+  total_count: number
+  response: KleppVideoFile[]
+}
+
+export interface KleppVideoTagsResponse {
+  total_count: number
+  response: KleppVideoTag[]
 }

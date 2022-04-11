@@ -40,10 +40,7 @@ function Main() {
           title={FRONTPAGE_TEXT.TITLE}
           subtitle={FRONTPAGE_TEXT.SUBTITLE}
         />
-        <KleppVideoGrid userName={userName} />
-        {accessToken && userName && (
-          <KleppVideoGrid accessToken={accessToken} userName={userName} />
-        )}
+        <KleppVideoGrid />
       </div>
     </ThemeProvider>
   )
