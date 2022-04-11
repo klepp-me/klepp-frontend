@@ -53,9 +53,14 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
 
   const handleTagsSearch = (
     event: SyntheticEvent<Element, Event>,
-    value: string | null
+    value: string[] | null
   ) => {
-    const queryString = value != null ? value : ""
+    let queryString = ""
+    if (value) {
+      value.forEach(query => {
+        queryString = queryString.concat(`&tag=${query}`)
+      })
+    }
     const query: QueryType = {
       query: queryString,
       type: VIDEO_QUERY_TYPE.TAG,
@@ -90,7 +95,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
             queryString = queryString.concat(`username=${query.query}&`)
             break
           case VIDEO_QUERY_TYPE.TAG:
-            queryString = queryString.concat(`tag=${query.query}`)
+            queryString = queryString.concat(query.query)
             break
           default:
             break
@@ -189,6 +194,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
           )}
         />
         <Autocomplete
+          multiple
           disablePortal
           id='autocomplete-box-tags'
           options={tags.map(tag => tag.label)}
