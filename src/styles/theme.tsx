@@ -50,6 +50,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+        },
+      },
+    },
   },
 })
 

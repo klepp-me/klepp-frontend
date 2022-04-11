@@ -1,4 +1,5 @@
 import { Autocomplete, Grid, TextField, Typography } from "@mui/material"
+import { debounce as Debouncer } from "lodash"
 import React, { SyntheticEvent, useEffect, useState } from "react"
 import useAuth from "../contexts/AuthContextProvider"
 import { KleppVideoFile } from "../models/KleppVideoModels"
@@ -36,6 +37,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
     query: "",
     type: VIDEO_QUERY_TYPE.TAG,
   })
+  const [textQuery, setTextQuery] = useState("")
 
   const { userName } = useAuth()
 
@@ -68,11 +70,23 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
     setTagsQuery(query)
   }
 
+  const handleTextSearch = (event: React.ChangeEvent<any>) => {
+    if (event.target.value == null) {
+      return
+    }
+    const titleQuery = event.target.value != null ? event.target.value : ""
+    setTextQuery(titleQuery)
+  }
+
+  const debouncedUsernameSearch = Debouncer(handleUsernameSearch, 300)
+  const debouncedTagSearch = Debouncer(handleTagsSearch, 300)
+  const debouncedTextSearch = Debouncer(handleTextSearch, 500)
+
   useEffect(() => {
     fetchItems()
     fetchUsers()
     fetchTags()
-  }, [userNameQuery, tagsQuery])
+  }, [userNameQuery, tagsQuery, textQuery])
 
   function fetchItems() {
     let queryParams = [userNameQuery, tagsQuery]
@@ -82,7 +96,11 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
       kleppvideoservice
         .getFiles(``, props.accessToken)
         .then(res => {
-          setItems(res.data.response)
+          setItems(
+            res.data.response.filter(item =>
+              item.display_name.toLowerCase().includes(textQuery.toLowerCase())
+            )
+          )
         })
         .catch(e => {
           console.error(e)
@@ -104,7 +122,11 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
       kleppvideoservice
         .getFiles(queryString, props.accessToken)
         .then(res => {
-          setItems(res.data.response)
+          setItems(
+            res.data.response.filter(item =>
+              item.display_name.toLowerCase().includes(textQuery.toLowerCase())
+            )
+          )
         })
         .catch(e => {
           console.error(e)
@@ -141,7 +163,6 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
   }
 
   function itemDeleted(fileName: string) {
-    console.log("deleted video callback")
     setItems(prevState => ({
       ...prevState.filter(item => item.path !== fileName),
     }))
@@ -178,17 +199,30 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
 
   return (
     <div style={{ marginTop: 24, paddingBottom: 16 }}>
-      <div className='filterGrid' style={{ marginLeft: 24 }}>
+      <Grid
+        className='filterGrid'
+        spacing={2}
+        columns={4}
+        direction='row'
+        container
+        style={{ marginLeft: 32 }}>
+        <TextField
+          id='textfield-videotitle-search'
+          onChange={debouncedTextSearch}
+          color='primary'
+          label='Søk etter video'
+          sx={{ width: 300, marginTop: 2, marginInlineEnd: 2 }}
+        />
         <Autocomplete
           disablePortal
           id='autocomplete-box-username'
           options={users.map(user => user.label)}
-          onChange={handleUsernameSearch}
-          sx={{ width: 300 }}
+          onChange={debouncedUsernameSearch}
+          sx={{ width: 300, marginInlineEnd: 2, marginTop: 2 }}
           renderInput={params => (
             <TextField
               {...params}
-              color='secondary'
+              color='primary'
               label='Søk etter brukernavn'
             />
           )}
@@ -198,13 +232,13 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
           disablePortal
           id='autocomplete-box-tags'
           options={tags.map(tag => tag.label)}
-          onChange={handleTagsSearch}
-          sx={{ width: 300 }}
+          onChange={debouncedTagSearch}
+          sx={{ width: 300, marginInlineEnd: 2, marginTop: 2 }}
           renderInput={params => (
-            <TextField {...params} color='secondary' label='Søk etter tags' />
+            <TextField {...params} color='primary' label='Søk etter tags' />
           )}
         />
-      </div>
+      </Grid>
       <Typography
         variant='h4'
         color='white'
