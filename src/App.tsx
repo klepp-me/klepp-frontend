@@ -13,6 +13,7 @@ import { FRONTPAGE_TEXT } from "./enums/AppTextTypes"
 import Login from "./components/Login"
 import UploadFile from "./components/UploadFile"
 import KleppVideoPreview from "./components/KleppVideoPreview"
+import { Container } from "@mui/material"
 
 Amplify.configure(AMPLIFY_CONFIG)
 
@@ -40,7 +41,9 @@ function Main() {
           title={FRONTPAGE_TEXT.TITLE}
           subtitle={FRONTPAGE_TEXT.SUBTITLE}
         />
-        <KleppVideoGrid />
+        <Container maxWidth='xl'>
+          <KleppVideoGrid />
+        </Container>
       </div>
     </ThemeProvider>
   )
