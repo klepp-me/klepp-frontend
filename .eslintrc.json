@@ -11,15 +11,7 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "react/react-in-jsx-scope": "off",
-    "sort-keys": [
-      "error",
-      "asc",
-      {
-        "natural": true
-      }
-    ],
-    "sort-vars": "error"
+    "react/react-in-jsx-scope": "off"
   },
   "settings": {
     "react": {
