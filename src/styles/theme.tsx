@@ -1,57 +1,55 @@
-import { createTheme } from '@mui/material/styles';
-import { red } from "@mui/material/colors";
+import { createTheme } from "@mui/material/styles"
+import { red } from "@mui/material/colors"
 
 const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#FEECE9',
-            light: '#CCD1E4',
-            dark: '#FE7E6D'
-        },
-        secondary: {
-            main: '#004d40',
-            light: '#39796b',
-            dark: '#00251a'
-        },
-        error: {
-            main: red.A400
-        }
+  palette: {
+    primary: {
+      main: "#FEECE9",
+      light: "#CCD1E4",
+      dark: "#FE7E6D",
     },
-    typography: {
-        fontFamily: [
-            'Roboto'
-        ].join(','),
+    secondary: {
+      main: "#004d40",
+      light: "#39796b",
+      dark: "#00251a",
     },
-    components: {
-        MuiCardContent: {
-            styleOverrides: {
-                root: {
-                    background: '#000a12',
-                    color: '#ffffff',
-                    borderColor: '#ffffff00',
-                }
-            }
+    error: {
+      main: red.A400,
+    },
+  },
+  typography: {
+    fontFamily: ["Roboto"].join(","),
+  },
+  components: {
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          background: "#000a12",
+          color: "#ffffff",
+          borderColor: "#ffffff00",
         },
-        MuiToolbar: {
-            styleOverrides: {
-                root: {
-                    background: '#0f2027',
-                    color: 'white'
-                }
-            }
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          background: "#0f2027",
+          color: "white",
         },
-        MuiButtonBase: {
-            styleOverrides: {
-                root: {
-                    [`&.MuiButton-root.Mui-disabled`]: {
-                        opacity: '0.3',
-                        color: 'black',
-                        backgroundColor: 'grey'
-                    }
-                }
-            }
-        }
-    }
-});
+      },
+    },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          [`&.MuiButton-root.Mui-disabled`]: {
+            opacity: "0.3",
+            color: "black",
+            backgroundColor: "grey",
+          },
+        },
+      },
+    },
+  },
+})
 
-export default theme;
+export default theme

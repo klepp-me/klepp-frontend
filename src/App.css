@@ -1,7 +1,12 @@
 .App {
   text-align: center;
-  background: rgb(15,32,39);
-  background: linear-gradient(90deg, rgba(15,32,39,1) 0%, rgba(54,71,79,1) 50%, rgba(44,83,100,1) 100%);
+  background: rgb(15, 32, 39);
+  background: linear-gradient(
+    90deg,
+    rgba(15, 32, 39, 1) 0%,
+    rgba(54, 71, 79, 1) 50%,
+    rgba(44, 83, 100, 1) 100%
+  );
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -16,7 +21,7 @@
 
 .klepp-videocontainer {
   position: relative;
-  padding-top: 56.25% /* Player ratio: 100 / (1280 / 720) */
+  padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
 }
 
 .klepp-videoplayer {
