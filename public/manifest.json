@@ -8,8 +8,8 @@
       "type": "image/x-icon"
     }
   ],
-  "name": "Create React App Sample",
-  "short_name": "React App",
+  "name": "Klepp Video Service",
+  "short_name": "Klepp",
   "start_url": ".",
   "theme_color": "#000000"
 }
