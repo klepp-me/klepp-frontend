@@ -22,6 +22,7 @@ export default function useAuth() {
     Auth.signOut()
     setUserName("")
     setUser(null)
+    setAccessToken("")
   }
 
   useEffect(() => {

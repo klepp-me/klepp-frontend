@@ -153,10 +153,7 @@ function UploadFile() {
   }
 
   function selectFile(event: React.FormEvent<HTMLInputElement>) {
-    if (
-      event.currentTarget.files &&
-      event.currentTarget.files.length > 0 == true
-    ) {
+    if (event.currentTarget.files && event.currentTarget.files.length > 0) {
       setSelectedFile(event.currentTarget.files)
     } else {
       setSelectedFile(null)

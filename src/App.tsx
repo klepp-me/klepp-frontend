@@ -7,7 +7,6 @@ import KleppFrontPage from "./components/KleppFrontPage"
 import { Amplify as Amplify } from "aws-amplify"
 import "@aws-amplify/ui-react/styles.css"
 import { AMPLIFY_CONFIG } from "./config/amplify_config"
-import useAuth from "./contexts/AuthContextProvider"
 import { Routes, Route, HashRouter } from "react-router-dom"
 import { FRONTPAGE_TEXT } from "./enums/AppTextTypes"
 import Login from "./components/Login"
@@ -31,7 +30,6 @@ function App() {
 }
 
 function Main() {
-  const { accessToken, userName } = useAuth()
   return (
     <ThemeProvider theme={theme}>
       <div className='App'>
