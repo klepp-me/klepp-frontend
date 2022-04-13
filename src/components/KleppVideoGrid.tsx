@@ -163,9 +163,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
   }
 
   function itemDeleted(fileName: string) {
-    setItems(prevState => ({
-      ...prevState.filter(item => item.path !== fileName),
-    }))
+    setItems(prevState => [...prevState.filter(item => item.path !== fileName)])
   }
 
   function renderItems() {
