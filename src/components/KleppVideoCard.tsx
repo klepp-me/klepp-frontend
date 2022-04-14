@@ -6,20 +6,26 @@ import {
   VisibilityOff,
 } from "@mui/icons-material"
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined"
+import LocalOfferIcon from "@mui/icons-material/LocalOffer"
 import {
   Alert,
   Card,
   CardContent,
+  Chip,
   Snackbar,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_CONFIG } from "../config/api_config"
 import useAuth from "../contexts/AuthContextProvider"
-import { KleppVideoFile, KleppVideoPatch } from "../models/KleppVideoModels"
+import {
+  KleppVideoFile,
+  KleppVideoPatch,
+  KleppVideoTag,
+} from "../models/KleppVideoModels"
 import kleppVideoService from "../services/kleppvideoservice"
 import KleppVideoPlayer from "./KleppVideoPlayer"
 
@@ -37,6 +43,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   const [alertText, setAlertText] = useState("")
   const [isHidden, setIsHidden] = useState(props.file.hidden)
   const [likes, setLikes] = useState(props.file.likes)
+  const [tags, setTags] = useState(props.file.tags)
 
   const navigate = useNavigate()
 
@@ -215,6 +222,49 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     }
   }
 
+  const handleDeleteTag = (
+    event: Event,
+    tag: KleppVideoTag,
+    file: KleppVideoFile
+  ) => {
+    kleppVideoService
+      .updateVideoAttrs({
+        path: file.path,
+        tags: tags.filter(t => t.name !== tag.name),
+      })
+      .then(() => {
+        setTags(tags.filter(t => t.name !== tag.name))
+      })
+      .catch(() => {
+        setAlertText("Could not remove tag")
+        openAlertClicked()
+      })
+  }
+  function renderTags() {
+    if (userName == props.file.user.name) {
+      return tags.map(tag => (
+        <Chip
+          icon={<LocalOfferIcon fontSize={"small"} />}
+          size={"small"}
+          key={`${props.file.path}${tag.name}`}
+          label={tag.name}
+          variant='outlined'
+          onDelete={event => handleDeleteTag(event, tag, props.file)}
+        />
+      ))
+    } else {
+      return tags.map(tag => (
+        <Chip
+          icon={<LocalOfferIcon fontSize={"small"} />}
+          size={"small"}
+          key={`${props.file.path}${tag.name}`}
+          label={tag.name}
+          variant='outlined'
+        />
+      ))
+    }
+  }
+
   return (
     <Card square={true} elevation={2} key={props.datetime.toString()}>
       <KleppVideoPlayer
@@ -304,6 +354,9 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         </Typography>
         <Typography variant='caption' color='white'>
           {props.datetime}
+        </Typography>
+        <Typography variant='body2' color='white'>
+          {renderTags()}
         </Typography>
       </CardContent>
     </Card>
