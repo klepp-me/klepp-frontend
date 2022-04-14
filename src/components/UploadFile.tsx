@@ -19,7 +19,7 @@ import Header from "./Header"
 import { KleppVideoFile } from "../models/KleppVideoModels"
 
 function UploadFile() {
-  const { user, accessToken } = useAuth()
+  const { user } = useAuth()
   const [selectedFile, setSelectedFile] = useState<FileList | null>()
   const [progress, setProgress] = useState(0)
   const [message, setMessage] = useState("")
@@ -48,7 +48,7 @@ function UploadFile() {
             </label>
           </div>
           <div style={{ marginTop: 32 }}>
-            {user && accessToken ? (
+            {user ? (
               <Button
                 variant='contained'
                 color='secondary'
@@ -124,18 +124,14 @@ function UploadFile() {
   }
 
   function uploadSelectedFile() {
-    if (selectedFile && selectedFile[0] && accessToken) {
+    if (selectedFile && selectedFile[0]) {
       setProgress(0)
       setIsUploading(true)
       kleppVideoService
-        .upload(
-          selectedFile[0],
-          accessToken,
-          (event: ProgressEvent<EventTarget>) => {
-            setProgress(Math.round((100 * event.loaded) / event.total))
-            setMessage("") // In case they had an error on first attempt, clear the error
-          }
-        )
+        .upload(selectedFile[0], (event: ProgressEvent<EventTarget>) => {
+          setProgress(Math.round((100 * event.loaded) / event.total))
+          setMessage("Uploading..") // In case they had an error on first attempt, clear the error
+        })
         .then(res => {
           setProgress(0)
           copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${res.data.uri}`)

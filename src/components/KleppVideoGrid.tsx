@@ -25,7 +25,7 @@ function KleppVideoGrid() {
   const [users, setUsers] = useState<AutocompleteOption[]>([])
   const [tags, setTags] = useState<AutocompleteOption[]>([])
 
-  const { accessToken, userName } = useAuth()
+  const { userName } = useAuth()
 
   const [userNameQuery, setUserNameQuery] = useState<QueryType>({
     query: "",
@@ -70,7 +70,7 @@ function KleppVideoGrid() {
     if (event.target.value == null) {
       return
     }
-    const titleQuery = event.target.value != null ? event.target.value : ""
+    const titleQuery = event.target.value
     setTextQuery(titleQuery)
   }
 
@@ -82,7 +82,7 @@ function KleppVideoGrid() {
     fetchItems()
     fetchUsers()
     fetchTags()
-  }, [userNameQuery, tagsQuery, textQuery, accessToken])
+  }, [userNameQuery, tagsQuery, textQuery])
 
   function fetchItems() {
     let queryParams = [userNameQuery, tagsQuery]
@@ -90,7 +90,7 @@ function KleppVideoGrid() {
 
     if (queryParams.length == 0) {
       kleppvideoservice
-        .getFiles(``, accessToken)
+        .getFiles(``)
         .then(res => {
           setItems(
             res.data.response.filter(item =>
@@ -116,7 +116,7 @@ function KleppVideoGrid() {
         }
       })
       kleppvideoservice
-        .getFiles(queryString, accessToken)
+        .getFiles(queryString)
         .then(res => {
           setItems(
             res.data.response.filter(item =>
@@ -132,7 +132,7 @@ function KleppVideoGrid() {
 
   function fetchUsers() {
     kleppvideoservice
-      .getUsers(accessToken)
+      .getUsers()
       .then(res => {
         setUsers(res.data.response.map(user => toAutoCompleteOption(user.name)))
       })
@@ -143,7 +143,7 @@ function KleppVideoGrid() {
 
   function fetchTags() {
     kleppvideoservice
-      .getTags(accessToken)
+      .getTags()
       .then(res => {
         setTags(res.data.response.map(tag => toAutoCompleteOption(tag.name)))
       })
