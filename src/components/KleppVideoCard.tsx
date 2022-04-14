@@ -176,7 +176,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   async function openVideoClicked() {
-    navigate(`video?uri=${props.file.uri}`)
+    navigate(`video?path=${props.file.path}`)
   }
 
   function renderLike() {
