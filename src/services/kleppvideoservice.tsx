@@ -13,14 +13,15 @@ import { Auth } from "aws-amplify"
 
 type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
 
-const onRequest = async (config: AxiosRequestConfig) => {
-  const session = await Auth.currentSession()
-  const jwtToken = session.getAccessToken().getJwtToken()
-  return {
+const onRequest = async (
+  config: AxiosRequestConfig
+): Promise<AxiosRequestConfig> => {
+  // If the user is authenticated, inject the bearer token
+  // If the user is anonymous, return default config
+  config = {
     ...config,
     headers: {
       ...config.headers,
-      Authorization: `Bearer ${jwtToken}`,
       accept: "application/json",
       "Content-Type":
         config.headers &&
@@ -29,6 +30,20 @@ const onRequest = async (config: AxiosRequestConfig) => {
           : "application/json",
     },
   }
+  return await Auth.currentSession()
+    .then(session => {
+      const jwtToken = session.getAccessToken().getJwtToken()
+      return {
+        ...config,
+        headers: {
+          ...config.headers,
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      }
+    })
+    .catch(() => {
+      return config
+    })
 }
 
 axios.interceptors.request.use(onRequest)
