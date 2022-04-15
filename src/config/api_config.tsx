@@ -9,4 +9,6 @@ export class API_CONFIG {
   static readonly hideFilePath = "hide"
   static readonly showFilePath = "show"
   static readonly likePath = "like"
+  static readonly usersPath = "users"
+  static readonly tagsPath = "tags"
 }

@@ -3,6 +3,7 @@ import { red } from "@mui/material/colors"
 
 const theme = createTheme({
   palette: {
+    mode: "dark",
     primary: {
       main: "#FEECE9",
       light: "#CCD1E4",
@@ -46,6 +47,13 @@ const theme = createTheme({
             color: "black",
             backgroundColor: "grey",
           },
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          display: "flex",
         },
       },
     },

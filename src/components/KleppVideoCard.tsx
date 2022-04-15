@@ -29,7 +29,7 @@ interface KleppVideoCardProps {
   username?: string
   canDelete: boolean
   onDelete: (fileName: string) => void
-  overrideHidden: boolean
+  canHide: boolean
 }
 
 function KleppVideoCard(props: KleppVideoCardProps) {
@@ -40,7 +40,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
   const navigate = useNavigate()
 
-  const { accessToken } = useAuth()
+  const { userName } = useAuth()
 
   function getVisibilityString(hidden: boolean) {
     return hidden ? "Vis video" : "Skjul video"
@@ -61,9 +61,9 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   function deleteItem(file: string) {
-    if (accessToken != null) {
+    if (userName != null) {
       kleppVideoService
-        .delete(file, accessToken)
+        .delete(file)
         .then(data => {
           props.onDelete(data.data.path)
           setAlertText("File deleted!")
@@ -81,14 +81,14 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   function toggleItemVisibility(isVisible: boolean, path: string) {
-    if (accessToken != null) {
+    if (userName != null) {
       const attrs: KleppVideoPatch = {
         path: path,
         hidden: !isVisible,
       }
 
       kleppVideoService
-        .updateVideoAttrs(accessToken, attrs)
+        .updateVideoAttrs(attrs)
         .then(data => {
           setIsHidden(data.data.hidden)
         })
@@ -100,9 +100,9 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   function likeItem(path: string) {
-    if (accessToken != null) {
+    if (userName != null) {
       kleppVideoService
-        .like(path, accessToken)
+        .like(path)
         .then(data => {
           setLikes(data.data.likes)
         })
@@ -117,9 +117,9 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   function dislikeItem(path: string) {
-    if (accessToken != null) {
+    if (userName != null) {
       kleppVideoService
-        .dislike(path, accessToken)
+        .dislike(path)
         .then(data => {
           setLikes(data.data.likes)
         })
@@ -176,14 +176,11 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   async function openVideoClicked() {
-    navigate(`video?uri=${props.file.uri}`)
+    navigate(`video?path=${props.file.path}`)
   }
 
   function renderLike() {
-    if (
-      props.file.user.name &&
-      likes.map(user => user.name).indexOf(props.file.user.name) !== -1
-    ) {
+    if (userName && likes.map(user => user.name).indexOf(userName) !== -1) {
       return (
         <Stack direction='row' spacing={0.5} justifyContent='flex-end'>
           <Tooltip title={tooltipLikes(false)}>
@@ -254,7 +251,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
               }
             />
           </Tooltip>
-          {!props.overrideHidden && (
+          {props.canHide && (
             <Tooltip title={getVisibilityString(isHidden)}>
               {!isHidden ? (
                 <VisibilityOff
