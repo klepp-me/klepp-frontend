@@ -6,11 +6,6 @@ import { KleppVideoFile } from "../models/KleppVideoModels"
 import kleppvideoservice from "../services/kleppvideoservice"
 import KleppVideoCard from "./KleppVideoCard"
 
-interface KleppVideoGridItemsProps {
-  accessToken?: string
-  userName?: string
-}
-
 interface AutocompleteOption {
   label: string
 }
@@ -25,10 +20,13 @@ enum VIDEO_QUERY_TYPE {
   TAG,
 }
 
-function KleppVideoGrid(props: KleppVideoGridItemsProps) {
+function KleppVideoGrid() {
   const [items, setItems] = useState<KleppVideoFile[]>([])
   const [users, setUsers] = useState<AutocompleteOption[]>([])
   const [tags, setTags] = useState<AutocompleteOption[]>([])
+
+  const { userName } = useAuth()
+
   const [userNameQuery, setUserNameQuery] = useState<QueryType>({
     query: "",
     type: VIDEO_QUERY_TYPE.USERNAME,
@@ -38,8 +36,6 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
     type: VIDEO_QUERY_TYPE.TAG,
   })
   const [textQuery, setTextQuery] = useState("")
-
-  const { userName } = useAuth()
 
   const handleUsernameSearch = (
     event: SyntheticEvent<Element, Event>,
@@ -74,7 +70,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
     if (event.target.value == null) {
       return
     }
-    const titleQuery = event.target.value != null ? event.target.value : ""
+    const titleQuery = event.target.value
     setTextQuery(titleQuery)
   }
 
@@ -94,7 +90,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
 
     if (queryParams.length == 0) {
       kleppvideoservice
-        .getFiles(``, props.accessToken)
+        .getFiles(``)
         .then(res => {
           setItems(
             res.data.response.filter(item =>
@@ -120,7 +116,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
         }
       })
       kleppvideoservice
-        .getFiles(queryString, props.accessToken)
+        .getFiles(queryString)
         .then(res => {
           setItems(
             res.data.response.filter(item =>
@@ -136,7 +132,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
 
   function fetchUsers() {
     kleppvideoservice
-      .getUsers(props.accessToken)
+      .getUsers()
       .then(res => {
         setUsers(res.data.response.map(user => toAutoCompleteOption(user.name)))
       })
@@ -147,7 +143,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
 
   function fetchTags() {
     kleppvideoservice
-      .getTags(props.accessToken)
+      .getTags()
       .then(res => {
         setTags(res.data.response.map(tag => toAutoCompleteOption(tag.name)))
       })
@@ -180,7 +176,7 @@ function KleppVideoGrid(props: KleppVideoGridItemsProps) {
             sx={{ minWidth: 200 }}>
             <KleppVideoCard
               file={item}
-              username={props.userName}
+              username={item.user.name}
               datetime={new Date(item.uploaded_at).toLocaleDateString("nb-NO", {
                 day: "numeric",
                 month: "short",

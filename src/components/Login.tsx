@@ -1,4 +1,4 @@
-import { Authenticator, View, Image } from "@aws-amplify/ui-react"
+import { Authenticator, View, Image, Grid, Flex } from "@aws-amplify/ui-react"
 import { ThemeProvider } from "@emotion/react"
 import { Typography } from "@mui/material"
 import { useEffect } from "react"
@@ -23,11 +23,16 @@ function Login() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div style={{ margin: 20 }} className='AuthContainer'>
-        <Authenticator signUpAttributes={["email"]} components={authComponents}>
-          {() => <></>}
-        </Authenticator>
-      </div>
+      <Grid>
+        <Flex justifyContent='center'>
+          <Authenticator
+            className='auth'
+            signUpAttributes={["email"]}
+            components={authComponents}>
+            {() => <></>}
+          </Authenticator>
+        </Flex>
+      </Grid>
     </ThemeProvider>
   )
 }
@@ -46,7 +51,6 @@ const authComponents = {
       </View>
     )
   },
-
   Footer() {
     return (
       <View textAlign='center'>

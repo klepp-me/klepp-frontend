@@ -6,7 +6,6 @@ import { CognitoUser } from "amazon-cognito-identity-js"
 
 export default function useAuth() {
   const [user, setUser] = useState<CognitoUser | null | undefined>()
-  const [accessToken, setAccessToken] = useState<string>()
   const [userName, setUserName] = useState<string>()
 
   const handleAuth = (payload: HubPayload) => {
@@ -34,11 +33,6 @@ export default function useAuth() {
       })
       .catch(console.error)
 
-    Auth.currentSession().then(session => {
-      const token = session.getAccessToken().getJwtToken()
-      setAccessToken(token)
-    })
-
     Hub.listen("auth", data => {
       handleAuth(data.payload)
     })
@@ -53,7 +47,6 @@ export default function useAuth() {
   return {
     Auth,
     user,
-    accessToken,
     signOut,
     userName,
   }
