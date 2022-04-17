@@ -23,13 +23,8 @@ function App() {
     <HelmetProvider>
       <Helmet>
         {/*Defaults*/}
-        <meta charSet='utf-8' />
         <link rel='icon' href={`${process.env.PUBLIC_URL}/favicon.ico`} />
         <link rel='manifest' href={`${process.env.PUBLIC_URL}/manifest.json`} />
-        <link
-          rel='stylesheet'
-          href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
-        />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta name='theme-color' content='#000000' />
         <meta property='og:description' content="Klepp it like it's hot" />
