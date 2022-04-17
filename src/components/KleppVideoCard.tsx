@@ -246,7 +246,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
               }}
               onClick={() =>
                 copyToClipboard(
-                  `${API_CONFIG.webBaseUrl}#/video?uri=${props.file.uri}`
+                  `${API_CONFIG.webBaseUrl}#/video?path=${props.file.path}`
                 )
               }
             />
