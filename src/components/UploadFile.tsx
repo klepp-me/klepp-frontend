@@ -1,14 +1,14 @@
 import {
-  Alert,
   Button,
   Container,
   Grid,
   LinearProgress,
-  Snackbar,
   ThemeProvider,
   Typography,
 } from "@mui/material"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
+import { useSnackbar } from "notistack"
+
 import { API_CONFIG } from "../config/api_config"
 import useAuth from "../contexts/AuthContextProvider"
 import kleppVideoService from "../services/kleppvideoservice"
@@ -24,9 +24,59 @@ function UploadFile() {
   const [progress, setProgress] = useState(0)
   const [message, setMessage] = useState("")
   const [isUploading, setIsUploading] = useState(false)
-  const [alertText, setAlertText] = useState("")
-  const [open, setOpen] = useState(false)
   const [video, setVideo] = useState<null | KleppVideoFile>(null)
+  const { enqueueSnackbar } = useSnackbar()
+
+  function deleteVideo() {
+    setVideo(null)
+    setMessage("")
+  }
+
+  function uploadSelectedFile() {
+    if (selectedFile && selectedFile[0]) {
+      setProgress(0)
+      setIsUploading(true)
+      kleppVideoService
+        .upload(selectedFile[0], (event: ProgressEvent<EventTarget>) => {
+          setProgress(Math.round((100 * event.loaded) / event.total))
+          setMessage("Uploading..") // In case they had an error on first attempt, clear the error
+        })
+        .then(res => {
+          setProgress(0)
+          copyToClipboard(`${API_CONFIG.shareBaseUrl}?path=${res.data.path}`)
+          setVideo(res.data)
+          setMessage("Upload complete. It will now appear on the front page.")
+          setIsUploading(false)
+        })
+        .catch(e => {
+          setProgress(0)
+          setMessage(`Could not upload file. ${e.response.data.detail}`)
+          setSelectedFile(null)
+          setIsUploading(false)
+        })
+    }
+  }
+
+  function selectFile(event: React.FormEvent<HTMLInputElement>) {
+    if (event.currentTarget.files && event.currentTarget.files.length > 0) {
+      setSelectedFile(event.currentTarget.files)
+    } else {
+      setSelectedFile(null)
+    }
+  }
+
+  function copyToClipboard(uri: string) {
+    navigator.clipboard
+      .writeText(uri)
+      .then(() => {
+        enqueueSnackbar("Copied video-URL to clipboard", { variant: "success" })
+      })
+      .catch(() => {
+        enqueueSnackbar("Unable to copy video-URL to clipboard", {
+          variant: "warning",
+        })
+      })
+  }
 
   return (
     <Container maxWidth='xl'>
@@ -80,17 +130,6 @@ function UploadFile() {
               </Typography>
             )}
           </div>
-          <Snackbar
-            open={open}
-            autoHideDuration={6000}
-            onClose={() => toggleAlert(false)}>
-            <Alert
-              onClose={() => toggleAlert(false)}
-              severity='success'
-              sx={{ width: "100%" }}>
-              {alertText}
-            </Alert>
-          </Snackbar>
           {video && (
             <Grid
               item={true}
@@ -117,62 +156,6 @@ function UploadFile() {
       </ThemeProvider>
     </Container>
   )
-
-  function deleteVideo() {
-    setVideo(null)
-    setMessage("")
-  }
-
-  function uploadSelectedFile() {
-    if (selectedFile && selectedFile[0]) {
-      setProgress(0)
-      setIsUploading(true)
-      kleppVideoService
-        .upload(selectedFile[0], (event: ProgressEvent<EventTarget>) => {
-          setProgress(Math.round((100 * event.loaded) / event.total))
-          setMessage("Uploading..") // In case they had an error on first attempt, clear the error
-        })
-        .then(res => {
-          setProgress(0)
-          copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${res.data.uri}`)
-          setVideo(res.data)
-          setMessage("Upload complete. It will now appear on the front page.")
-          setIsUploading(false)
-        })
-        .catch(e => {
-          setProgress(0)
-          setMessage(`Could not upload file. ${e.response.data.detail}`)
-          setSelectedFile(null)
-          setIsUploading(false)
-        })
-    }
-  }
-
-  function selectFile(event: React.FormEvent<HTMLInputElement>) {
-    if (event.currentTarget.files && event.currentTarget.files.length > 0) {
-      setSelectedFile(event.currentTarget.files)
-    } else {
-      setSelectedFile(null)
-    }
-  }
-
-  function copyToClipboard(uri: string) {
-    navigator.clipboard
-      .writeText(uri)
-      .then(() => {
-        setAlertText("Copied video-URL to clipboard!")
-      })
-      .catch(() => {
-        setAlertText("Kunne ikke kopiere")
-      })
-      .finally(() => {
-        toggleAlert(true)
-      })
-  }
-
-  function toggleAlert(open: boolean) {
-    setOpen(open)
-  }
 }
 
 export default UploadFile
