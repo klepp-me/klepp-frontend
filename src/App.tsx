@@ -15,8 +15,6 @@ import KleppVideoPreview from "./components/KleppVideoPreview"
 import { Container } from "@mui/material"
 import { SnackbarProvider } from "notistack"
 
-import { Helmet, HelmetProvider } from "react-helmet-async"
-
 Amplify.configure(AMPLIFY_CONFIG)
 
 function App() {
