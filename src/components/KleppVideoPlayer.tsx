@@ -1,6 +1,5 @@
 import React from "react"
 import ReactPlayer from "react-player"
-import { Helmet, HelmetProvider } from "react-helmet-async"
 
 interface KleppVideoPlayerItem {
   embedUrl: string

@@ -3,6 +3,7 @@ export class API_CONFIG {
   static readonly baseUrl = `https://api.klepp.me/api/${API_CONFIG.apiVersion}/`
   static readonly webBaseUrl = "https://klepp.me/"
   static readonly fileBaseUrl = "https://gg.klepp.me/"
+  static readonly shareBaseUrl = "https://share.klepp.me/"
 
   // Endpoints
   static readonly filesPath = "files"
