@@ -14,13 +14,18 @@ import UploadFile from "./components/UploadFile"
 import KleppVideoPreview from "./components/KleppVideoPreview"
 import { Container } from "@mui/material"
 import { SnackbarProvider } from "notistack"
-
+import { styled } from "@mui/material"
+const StyledSnackbarProvider = styled(SnackbarProvider)`
+  &.SnackbarItem-variantSuccess {
+    background-color: ${theme.palette.secondary.main};
+  }
+`
 Amplify.configure(AMPLIFY_CONFIG)
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <SnackbarProvider maxSnack={3}>
+      <StyledSnackbarProvider maxSnack={3}>
         <HashRouter basename={process.env.PUBLIC_URL}>
           <Routes>
             <Route path='/' element={<Main />} />
@@ -29,7 +34,7 @@ function App() {
             <Route path='/video' element={<KleppVideoPreview />} />
           </Routes>
         </HashRouter>
-      </SnackbarProvider>
+      </StyledSnackbarProvider>
     </ThemeProvider>
   )
 }
