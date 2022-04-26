@@ -13,13 +13,8 @@ import Login from "./components/Login"
 import UploadFile from "./components/UploadFile"
 import KleppVideoPreview from "./components/KleppVideoPreview"
 import { Container } from "@mui/material"
-import { SnackbarProvider } from "notistack"
-import { styled } from "@mui/material"
-const StyledSnackbarProvider = styled(SnackbarProvider)`
-  &.SnackbarItem-variantSuccess {
-    background-color: ${theme.palette.secondary.main};
-  }
-`
+import StyledSnackbarProvider from "./components/utils/StyledSnackbar"
+
 Amplify.configure(AMPLIFY_CONFIG)
 
 function App() {
