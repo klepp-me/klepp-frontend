@@ -1,14 +1,14 @@
 import {
-  Alert,
   Button,
   Container,
   Grid,
   LinearProgress,
-  Snackbar,
   ThemeProvider,
   Typography,
 } from "@mui/material"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
+import { useSnackbar } from "notistack"
+
 import { API_CONFIG } from "../config/api_config"
 import useAuth from "../contexts/AuthContextProvider"
 import kleppVideoService from "../services/kleppvideoservice"
@@ -24,99 +24,8 @@ function UploadFile() {
   const [progress, setProgress] = useState(0)
   const [message, setMessage] = useState("")
   const [isUploading, setIsUploading] = useState(false)
-  const [alertText, setAlertText] = useState("")
-  const [open, setOpen] = useState(false)
   const [video, setVideo] = useState<null | KleppVideoFile>(null)
-
-  return (
-    <Container maxWidth='xl'>
-      <ThemeProvider theme={theme}>
-        <Header />
-        <div style={{ marginTop: 24, marginLeft: 24, marginRight: 24 }}>
-          <div>
-            <Typography variant='h4' color={"white"} sx={{ mb: 2 }}>
-              Last opp video
-            </Typography>
-            <label htmlFor='contained-button-file' className='uploadLabel'>
-              <input
-                accept='.mp4'
-                id='contained-button-file'
-                type='file'
-                onChange={selectFile}
-                color='white'
-              />
-            </label>
-          </div>
-          <div style={{ marginTop: 32 }}>
-            {user ? (
-              <Button
-                variant='contained'
-                color='secondary'
-                onClick={uploadSelectedFile}
-                disabled={isUploading || !selectedFile}
-                sx={{
-                  "&:hover": {
-                    color: "#39796b",
-                    cursor: "pointer",
-                    display: "block",
-                  },
-                }}>
-                Upload video
-              </Button>
-            ) : (
-              <p>Logg inn for å laste opp filer</p>
-            )}
-            {progress > 0 && (
-              <LinearProgress
-                variant='determinate'
-                color={"secondary"}
-                value={progress}
-                sx={{ mt: 2, width: 1 / 4, height: 12 }}
-              />
-            )}
-            {message && (
-              <Typography variant='body1' color={"white"} sx={{ mt: 2 }}>
-                {message}
-              </Typography>
-            )}
-          </div>
-          <Snackbar
-            open={open}
-            autoHideDuration={6000}
-            onClose={() => toggleAlert(false)}>
-            <Alert
-              onClose={() => toggleAlert(false)}
-              severity='success'
-              sx={{ width: "100%" }}>
-              {alertText}
-            </Alert>
-          </Snackbar>
-          {video && (
-            <Grid
-              item={true}
-              key={video.path}
-              sx={{ minWidth: 200, maxWidth: 600 }}>
-              <KleppVideoCard
-                file={video}
-                username={video.user.name}
-                datetime={new Date(video.uploaded_at).toLocaleDateString(
-                  "nb-NO",
-                  {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  }
-                )}
-                canDelete={true}
-                canHide={true}
-                onDelete={() => deleteVideo()}
-              />
-            </Grid>
-          )}
-        </div>
-      </ThemeProvider>
-    </Container>
-  )
+  const { enqueueSnackbar } = useSnackbar()
 
   function deleteVideo() {
     setVideo(null)
@@ -134,7 +43,7 @@ function UploadFile() {
         })
         .then(res => {
           setProgress(0)
-          copyToClipboard(`${API_CONFIG.webBaseUrl}#/video?uri=${res.data.uri}`)
+          copyToClipboard(`${API_CONFIG.shareBaseUrl}?path=${res.data.path}`)
           setVideo(res.data)
           setMessage("Upload complete. It will now appear on the front page.")
           setIsUploading(false)
@@ -142,6 +51,7 @@ function UploadFile() {
         .catch(e => {
           setProgress(0)
           setMessage(`Could not upload file. ${e.response.data.detail}`)
+          enqueueSnackbar("Unable to upload file", { variant: "error" })
           setSelectedFile(null)
           setIsUploading(false)
         })
@@ -160,19 +70,91 @@ function UploadFile() {
     navigator.clipboard
       .writeText(uri)
       .then(() => {
-        setAlertText("Copied video-URL to clipboard!")
+        enqueueSnackbar("Copied video-URL to clipboard", { variant: "success" })
       })
       .catch(() => {
-        setAlertText("Kunne ikke kopiere")
-      })
-      .finally(() => {
-        toggleAlert(true)
+        enqueueSnackbar("Unable to copy video-URL to clipboard", {
+          variant: "warning",
+        })
       })
   }
 
-  function toggleAlert(open: boolean) {
-    setOpen(open)
-  }
+  return (
+    <Container maxWidth='xl'>
+      <Header />
+      <div style={{ marginTop: 24, marginLeft: 24, marginRight: 24 }}>
+        <div>
+          <Typography variant='h4' color={"white"} sx={{ mb: 2 }}>
+            Last opp video
+          </Typography>
+          <label htmlFor='contained-button-file' className='uploadLabel'>
+            <input
+              accept='.mp4'
+              id='contained-button-file'
+              type='file'
+              onChange={selectFile}
+              color='white'
+            />
+          </label>
+        </div>
+        <div style={{ marginTop: 32 }}>
+          {user ? (
+            <Button
+              variant='contained'
+              color='secondary'
+              onClick={uploadSelectedFile}
+              disabled={isUploading || !selectedFile}
+              sx={{
+                "&:hover": {
+                  color: "#39796b",
+                  cursor: "pointer",
+                  display: "block",
+                },
+              }}>
+              Upload video
+            </Button>
+          ) : (
+            <p>Logg inn for å laste opp filer</p>
+          )}
+          {progress > 0 && (
+            <LinearProgress
+              variant='determinate'
+              color={"secondary"}
+              value={progress}
+              sx={{ mt: 2, width: 1 / 4, height: 12 }}
+            />
+          )}
+          {message && (
+            <Typography variant='body1' color={"white"} sx={{ mt: 2 }}>
+              {message}
+            </Typography>
+          )}
+        </div>
+        {video && (
+          <Grid
+            item={true}
+            key={video.path}
+            sx={{ minWidth: 200, maxWidth: 600 }}>
+            <KleppVideoCard
+              file={video}
+              username={video.user.name}
+              datetime={new Date(video.uploaded_at).toLocaleDateString(
+                "nb-NO",
+                {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                }
+              )}
+              canDelete={true}
+              canHide={true}
+              onDelete={() => deleteVideo()}
+            />
+          </Grid>
+        )}
+      </div>
+    </Container>
+  )
 }
 
 export default UploadFile

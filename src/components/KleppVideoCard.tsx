@@ -6,22 +6,14 @@ import {
   VisibilityOff,
 } from "@mui/icons-material"
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined"
-import {
-  Alert,
-  Card,
-  CardContent,
-  Snackbar,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material"
+import { Card, CardContent, Stack, Tooltip, Typography } from "@mui/material"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { API_CONFIG } from "../config/api_config"
 import useAuth from "../contexts/AuthContextProvider"
 import { KleppVideoFile, KleppVideoPatch } from "../models/KleppVideoModels"
 import kleppVideoService from "../services/kleppvideoservice"
 import KleppVideoPlayer from "./KleppVideoPlayer"
+import { SnackbarMessage, useSnackbar, VariantType } from "notistack"
 
 interface KleppVideoCardProps {
   datetime: string
@@ -33,30 +25,32 @@ interface KleppVideoCardProps {
 }
 
 function KleppVideoCard(props: KleppVideoCardProps) {
-  const [open, setOpen] = useState(false)
-  const [alertText, setAlertText] = useState("")
   const [isHidden, setIsHidden] = useState(props.file.hidden)
   const [likes, setLikes] = useState(props.file.likes)
-
-  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
 
   const { userName } = useAuth()
 
+  function enqueueSnackbarVariant(
+    message: SnackbarMessage,
+    variant: VariantType
+  ) {
+    // variant could be success, error, warning, info, or default
+    enqueueSnackbar(message, { variant })
+  }
+
   function getVisibilityString(hidden: boolean) {
-    return hidden ? "Vis video" : "Skjul video"
+    return hidden ? "Show video" : "Hide video"
   }
 
   function copyToClipboard(uri: string) {
     navigator.clipboard
       .writeText(uri)
       .then(() => {
-        setAlertText("Copied to clipboard!")
+        enqueueSnackbarVariant("Copied link to clipboard", "success")
       })
       .catch(() => {
-        setAlertText("Kunne ikke kopiere")
-      })
-      .finally(() => {
-        openAlertClicked()
+        enqueueSnackbarVariant("Could not copy link to clipboard", "warning")
       })
   }
 
@@ -66,17 +60,13 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         .delete(file)
         .then(data => {
           props.onDelete(data.data.path)
-          setAlertText("File deleted!")
+          enqueueSnackbarVariant("File deleted", "success")
         })
         .catch(() => {
-          setAlertText("Could not delete file")
-        })
-        .finally(() => {
-          openAlertClicked()
+          enqueueSnackbarVariant("Could not delete file", "warning")
         })
     } else {
-      setAlertText("Could not delete file, try again")
-      openAlertClicked()
+      enqueueSnackbarVariant("Could not delete file, try again", "warning")
     }
   }
 
@@ -91,10 +81,10 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         .updateVideoAttrs(attrs)
         .then(data => {
           setIsHidden(data.data.hidden)
+          enqueueSnackbarVariant("Visibility has been updated", "success")
         })
         .catch(() => {
-          setAlertText("Could not update visibility")
-          openAlertClicked()
+          enqueueSnackbarVariant("Unable to update visibility", "warning")
         })
     }
   }
@@ -107,12 +97,10 @@ function KleppVideoCard(props: KleppVideoCardProps) {
           setLikes(data.data.likes)
         })
         .catch(() => {
-          setAlertText("Could not like video")
-          openAlertClicked()
+          enqueueSnackbarVariant("Could not like video", "warning")
         })
     } else {
-      setAlertText("Log in to like video")
-      openAlertClicked()
+      enqueueSnackbarVariant("Log in to like video", "warning")
     }
   }
 
@@ -124,21 +112,11 @@ function KleppVideoCard(props: KleppVideoCardProps) {
           setLikes(data.data.likes)
         })
         .catch(() => {
-          setAlertText("Could not like video")
-          openAlertClicked()
+          enqueueSnackbarVariant("Could not unlike video", "warning")
         })
     } else {
-      setAlertText("Log in to like video")
-      openAlertClicked()
+      enqueueSnackbarVariant("Log in to unlike video", "warning")
     }
-  }
-
-  function openAlertClicked() {
-    setOpen(true)
-  }
-
-  function handleClose() {
-    setOpen(false)
   }
 
   function likeCounter() {
@@ -176,7 +154,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   async function openVideoClicked() {
-    navigate(`video?path=${props.file.path}`)
+    window.location.assign(`${API_CONFIG.shareBaseUrl}?path=${props.file.path}`)
   }
 
   function renderLike() {
@@ -279,14 +257,6 @@ function KleppVideoCard(props: KleppVideoCardProps) {
             </Tooltip>
           )}
         </Stack>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            severity='success'
-            sx={{ width: "100%" }}>
-            {alertText}
-          </Alert>
-        </Snackbar>
         <Typography
           variant='body1'
           color='white'

@@ -1,6 +1,5 @@
 import ReactPlayer from "react-player"
 import { useSearchParams } from "react-router-dom"
-import { Helmet } from "react-helmet-async"
 import React, { useEffect, useState } from "react"
 import kleppVideoService from "../services/kleppvideoservice"
 import { KleppVideoFile } from "../models/KleppVideoModels"
@@ -29,13 +28,6 @@ function KleppVideoPlayer() {
 
   return (
     <div>
-      <Helmet>
-        <meta property='og:title' content='Klepp' />
-        <meta property='og:type' content='video' />
-        <meta property='og:url' content={video?.uri} />
-        <meta property='og:image' content={video?.thumbnail_uri} />
-      </Helmet>
-
       <div className='klepp-videopreview-container'>
         <ReactPlayer
           className='klepp-videoplayer'

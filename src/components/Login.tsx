@@ -22,18 +22,16 @@ function Login() {
   })
 
   return (
-    <ThemeProvider theme={theme}>
-      <Grid>
-        <Flex justifyContent='center'>
-          <Authenticator
-            className='auth'
-            signUpAttributes={["email"]}
-            components={authComponents}>
-            {() => <></>}
-          </Authenticator>
-        </Flex>
-      </Grid>
-    </ThemeProvider>
+    <Grid>
+      <Flex justifyContent='center'>
+        <Authenticator
+          className='auth'
+          signUpAttributes={["email"]}
+          components={authComponents}>
+          {() => <></>}
+        </Authenticator>
+      </Flex>
+    </Grid>
   )
 }
 
