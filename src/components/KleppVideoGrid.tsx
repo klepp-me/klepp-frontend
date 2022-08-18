@@ -11,6 +11,7 @@ import useAuth from "../contexts/AuthContextProvider"
 import { KleppVideoFile } from "../models/KleppVideoModels"
 import kleppvideoservice from "../services/kleppvideoservice"
 import KleppVideoCard from "./KleppVideoCard"
+import { useSnackbar } from "notistack"
 
 interface AutocompleteOption {
   label: string
@@ -34,6 +35,7 @@ function KleppVideoGrid() {
   const [tags, setTags] = useState<AutocompleteOption[]>([])
 
   const { userName } = useAuth()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [userNameQuery, setUserNameQuery] = useState<QueryType>({
     query: "",
@@ -108,7 +110,10 @@ function KleppVideoGrid() {
       setItems([])
     } else {
       if (offset < paginationLimit || (offset > 0 && offset == totalCount)) {
-        // Nothing to do here as we nothing more to paginate
+        enqueueSnackbar("No more klepps to display, you are all caught up!", {
+          variant: "info",
+          preventDuplicate: true,
+        })
         return
       }
     }
