@@ -1,4 +1,10 @@
-import { Autocomplete, Grid, TextField, Typography } from "@mui/material"
+import {
+  Autocomplete,
+  Grid,
+  TextField,
+  Typography,
+  Button,
+} from "@mui/material"
 import { debounce as Debouncer } from "lodash"
 import React, { SyntheticEvent, useEffect, useState } from "react"
 import useAuth from "../contexts/AuthContextProvider"
@@ -18,9 +24,11 @@ interface QueryType {
 enum VIDEO_QUERY_TYPE {
   USERNAME,
   TAG,
+  NAME,
 }
 
 function KleppVideoGrid() {
+  const [totalCount, setTotalCount] = useState(0)
   const [items, setItems] = useState<KleppVideoFile[]>([])
   const [users, setUsers] = useState<AutocompleteOption[]>([])
   const [tags, setTags] = useState<AutocompleteOption[]>([])
@@ -35,7 +43,12 @@ function KleppVideoGrid() {
     query: "",
     type: VIDEO_QUERY_TYPE.TAG,
   })
-  const [textQuery, setTextQuery] = useState("")
+  const [textQuery, setTextQuery] = useState<QueryType>({
+    query: "",
+    type: VIDEO_QUERY_TYPE.NAME,
+  })
+
+  const paginationLimit = 12
 
   const handleUsernameSearch = (
     event: SyntheticEvent<Element, Event>,
@@ -84,19 +97,28 @@ function KleppVideoGrid() {
     fetchTags()
   }, [userNameQuery, tagsQuery, textQuery])
 
-  function fetchItems() {
-    let queryParams = [userNameQuery, tagsQuery]
+  function fetchItems(fromLoad = false) {
+    let queryParams = [userNameQuery, tagsQuery, textQuery]
     queryParams = queryParams.filter(query => query.query !== "")
+
+    const offset = fromLoad ? items.length : 0
+
+    if (!fromLoad) {
+      // Quick fix to reset pagination state when we are refreshing data without load.
+      setItems([])
+    } else {
+      if (offset < paginationLimit || (offset > 0 && offset == totalCount)) {
+        // Nothing to do here as we nothing more to paginate
+        return
+      }
+    }
 
     if (queryParams.length == 0) {
       kleppvideoservice
-        .getFiles(``)
+        .getFiles(`?offset=${offset}&limit=${paginationLimit}`)
         .then(res => {
-          setItems(
-            res.data.response.filter(item =>
-              item.display_name.toLowerCase().includes(textQuery.toLowerCase())
-            )
-          )
+          setTotalCount(res.data.total_count)
+          setItems(prevState => [...prevState, ...res.data.response])
         })
         .catch(e => {
           console.error(e)
@@ -115,14 +137,23 @@ function KleppVideoGrid() {
             break
         }
       })
+
+      if (textQuery.query != "") {
+        queryString = queryString.concat(`name=${textQuery}&`)
+      }
+
+      queryString = queryString.concat(
+        `offset=${offset}&limit=${paginationLimit}`
+      )
+
       kleppvideoservice
         .getFiles(queryString)
         .then(res => {
-          setItems(
-            res.data.response.filter(item =>
-              item.display_name.toLowerCase().includes(textQuery.toLowerCase())
-            )
-          )
+          setTotalCount(res.data.total_count)
+          setItems(prevState => [
+            ...prevState,
+            ...res.data.response.filter(item => !items.includes(item)),
+          ])
         })
         .catch(e => {
           console.error(e)
@@ -165,7 +196,6 @@ function KleppVideoGrid() {
   function renderItems() {
     return items
       .filter(item => item.uri.endsWith(".mp4")) // Maybe redundant. Done in aws
-      .slice(0, 12)
       .map(item => {
         return (
           <Grid
@@ -189,6 +219,10 @@ function KleppVideoGrid() {
           </Grid>
         )
       })
+  }
+
+  function onLoadMoreVideosClicked() {
+    fetchItems(true)
   }
 
   return (
@@ -253,6 +287,20 @@ function KleppVideoGrid() {
           </Grid>
         )}
       </div>
+      <Button
+        variant='contained'
+        color='secondary'
+        onClick={onLoadMoreVideosClicked}
+        sx={{
+          "&:hover": {
+            color: "#39796b",
+            cursor: "pointer",
+          },
+          marginTop: 4,
+          marginBottom: 2,
+        }}>
+        Load more videos
+      </Button>
     </div>
   )
 }
