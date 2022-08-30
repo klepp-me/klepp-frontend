@@ -197,7 +197,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     <Card square={true} elevation={2} key={props.datetime.toString()}>
       <KleppVideoPlayer
         embedUrl={props.file.uri}
-        thumbnailUri={props.file.thumbnail_uri}
+        thumbnailUri={encodeURI(props.file.thumbnail_uri)}
       />
       <CardContent
         sx={{ "&:last-child": { paddingBottom: "16px" }, paddingTop: 1 }}>
