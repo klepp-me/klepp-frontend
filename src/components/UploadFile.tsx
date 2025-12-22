@@ -3,7 +3,6 @@ import {
   Container,
   Grid,
   LinearProgress,
-  ThemeProvider,
   Typography,
 } from "@mui/material"
 import React, { useState } from "react"
@@ -14,7 +13,6 @@ import useAuth from "../contexts/AuthContextProvider"
 import kleppVideoService from "../services/kleppvideoservice"
 import KleppVideoCard from "./KleppVideoCard"
 
-import theme from "../styles/theme"
 import Header from "./Header"
 import { KleppVideoFile } from "../models/KleppVideoModels"
 

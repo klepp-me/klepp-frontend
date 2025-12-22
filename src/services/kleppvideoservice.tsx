@@ -9,7 +9,7 @@ import {
   KleppUserResponse,
   KleppVideoTagsResponse,
 } from "../models/KleppVideoModels"
-import { Auth } from "aws-amplify"
+import { fetchAuthSession } from "aws-amplify/auth"
 
 type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
 
@@ -28,16 +28,19 @@ const onRequest = (config: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
           : "application/json",
     },
   }
-  return Auth.currentSession()
+  return fetchAuthSession()
     .then(session => {
-      const jwtToken = session.getAccessToken().getJwtToken()
-      return {
-        ...config,
-        headers: {
-          ...config.headers,
-          Authorization: `Bearer ${jwtToken}`,
-        },
+      const jwtToken = session.tokens?.accessToken?.toString()
+      if (jwtToken) {
+        return {
+          ...config,
+          headers: {
+            ...config.headers,
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
       }
+      return config
     })
     .catch(() => {
       return config

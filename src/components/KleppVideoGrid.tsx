@@ -81,7 +81,7 @@ function KleppVideoGrid() {
     setTagsQuery(query)
   }
 
-  const handleTextSearch = (event: React.ChangeEvent<any>) => {
+  const handleTextSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value == null) {
       return
     }
@@ -97,6 +97,7 @@ function KleppVideoGrid() {
     fetchItems()
     fetchUsers()
     fetchTags()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userNameQuery, tagsQuery, textQuery])
 
   function fetchItems(fromLoad = false) {

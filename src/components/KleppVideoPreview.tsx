@@ -8,11 +8,7 @@ function KleppVideoPlayer() {
   const [searchParams] = useSearchParams()
   const [video, setVideo] = useState<KleppVideoFile | null>(null)
 
-  useEffect(() => {
-    getVideo()
-  }, [searchParams])
-
-  function getVideo() {
+  const getVideo = () => {
     if (`${searchParams.get("path")}` != null) {
       kleppVideoService
         .getFiles(`?path=${searchParams.get("path")}`)
@@ -25,6 +21,11 @@ function KleppVideoPlayer() {
         })
     }
   }
+
+  useEffect(() => {
+    getVideo()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   return (
     <div>
