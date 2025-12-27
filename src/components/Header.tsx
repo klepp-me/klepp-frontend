@@ -2,16 +2,87 @@ import {
   LoginOutlined,
   LogoutOutlined,
   UploadOutlined,
+  PhotoCamera,
 } from "@mui/icons-material"
-import { Box, IconButton, Tooltip, Typography } from "@mui/material"
+import {
+  Avatar,
+  Box,
+  IconButton,
+  Tooltip,
+  Typography,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material"
 import AppBar from "@mui/material/AppBar"
 import Toolbar from "@mui/material/Toolbar"
 import { useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { useSnackbar } from "notistack"
 import useAuth from "../contexts/AuthContextProvider"
 import HideOnScroll from "./utils/HideOnScroll"
+import kleppVideoService from "../services/kleppvideoservice"
 
 function Header() {
   const { user, signOut } = useAuth()
+  const [userThumbnail, setUserThumbnail] = useState<string | null>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { enqueueSnackbar } = useSnackbar()
+  const menuOpen = Boolean(anchorEl)
+
+  useEffect(() => {
+    if (user?.username) {
+      kleppVideoService
+        .getUsers()
+        .then(response => {
+          const currentUser = response.data.response.find(
+            u => u.name === user.username,
+          )
+          if (currentUser?.thumbnail_uri) {
+            setUserThumbnail(currentUser.thumbnail_uri)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [user?.username])
+
+  function handleMenuOpen(event: React.MouseEvent<HTMLElement>) {
+    setAnchorEl(event.currentTarget)
+  }
+
+  function handleMenuClose() {
+    setAnchorEl(null)
+  }
+
+  function handleProfilePictureClick() {
+    fileInputRef.current?.click()
+    handleMenuClose()
+  }
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    if (file) {
+      kleppVideoService
+        .uploadProfileThumbnail(file)
+        .then(response => {
+          setUserThumbnail(response.data.thumbnail_uri)
+          enqueueSnackbar("Profile picture updated", { variant: "success" })
+        })
+        .catch(() => {
+          enqueueSnackbar("Could not update profile picture", {
+            variant: "error",
+          })
+        })
+    }
+    event.target.value = ""
+  }
+
+  function handleSignOut() {
+    handleMenuClose()
+    signOut()
+  }
 
   function navigateToLogin() {
     navigate("/login", { replace: false })
@@ -59,7 +130,7 @@ function Header() {
                   },
                 }}>
                 <img
-                  src='../assets/kleppwhite.png'
+                  src='/assets/kleppwhite.png'
                   alt='klepp-frontend-logo'
                   width='36'
                   height='40'
@@ -77,7 +148,7 @@ function Header() {
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Tooltip title='Last opp fil'>
+                <Tooltip title='Upload file'>
                   <IconButton
                     onClick={navigateToUpload}
                     sx={{
@@ -93,15 +164,23 @@ function Header() {
                     }}>
                     <UploadOutlined sx={{ mr: 0.5, fontSize: 18 }} />
                     <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                      Nytt klepp
+                      New klepp
                     </Typography>
                   </IconButton>
                 </Tooltip>
-                <Tooltip title='Logg ut'>
-                  <IconButton onClick={signOut} sx={headerButtonSx}>
-                    <LogoutOutlined
-                      sx={{ mr: 0.5, fontSize: 18, color: "#94a3b8" }}
-                    />
+                <Tooltip title='Profile'>
+                  <IconButton onClick={handleMenuOpen} sx={headerButtonSx}>
+                    <Avatar
+                      src={userThumbnail || undefined}
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        mr: 0.5,
+                        bgcolor: userThumbnail ? "transparent" : "#1e293b",
+                        fontSize: 14,
+                      }}>
+                      {!userThumbnail && user.username?.charAt(0).toUpperCase()}
+                    </Avatar>
                     <Typography
                       variant='body2'
                       sx={{ color: "#94a3b8", fontWeight: 500 }}>
@@ -109,6 +188,45 @@ function Header() {
                     </Typography>
                   </IconButton>
                 </Tooltip>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={menuOpen}
+                  onClose={handleMenuClose}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  PaperProps={{
+                    sx: {
+                      bgcolor: "#1e293b",
+                      border: "1px solid #334155",
+                      mt: 1,
+                    },
+                  }}>
+                  <MenuItem onClick={handleProfilePictureClick}>
+                    <ListItemIcon>
+                      <PhotoCamera sx={{ color: "#94a3b8" }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary='Change profile picture'
+                      sx={{ color: "#f1f5f9" }}
+                    />
+                  </MenuItem>
+                  <MenuItem onClick={handleSignOut}>
+                    <ListItemIcon>
+                      <LogoutOutlined sx={{ color: "#94a3b8" }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary='Sign out'
+                      sx={{ color: "#f1f5f9" }}
+                    />
+                  </MenuItem>
+                </Menu>
+                <input
+                  type='file'
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept='image/*'
+                  style={{ display: "none" }}
+                />
               </Box>
             </Toolbar>
           </AppBar>
@@ -154,7 +272,7 @@ function Header() {
                 <Typography
                   variant='body2'
                   sx={{ color: "#f1f5f9", fontWeight: 500 }}>
-                  Logg inn
+                  Sign in
                 </Typography>
               </IconButton>
             </Toolbar>

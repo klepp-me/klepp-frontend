@@ -12,4 +12,5 @@ export class API_CONFIG {
   static readonly likePath = "like"
   static readonly usersPath = "users"
   static readonly tagsPath = "tags"
+  static readonly userPath = "user"
 }

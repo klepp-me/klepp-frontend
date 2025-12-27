@@ -83,7 +83,7 @@ function UploadFile() {
       <div style={{ marginTop: 24, marginLeft: 24, marginRight: 24 }}>
         <div>
           <Typography variant='h4' color={"white"} sx={{ mb: 2 }}>
-            Last opp video
+            Upload video
           </Typography>
           <label htmlFor='contained-button-file' className='uploadLabel'>
             <input
@@ -104,7 +104,7 @@ function UploadFile() {
               Upload video
             </Button>
           ) : (
-            <p>Logg inn for å laste opp filer</p>
+            <p>Sign in to upload files</p>
           )}
           {progress > 0 && (
             <LinearProgress
@@ -126,7 +126,7 @@ function UploadFile() {
               file={video}
               username={video.user.name}
               datetime={new Date(video.uploaded_at).toLocaleDateString(
-                "nb-NO",
+                "en-US",
                 {
                   day: "numeric",
                   month: "short",

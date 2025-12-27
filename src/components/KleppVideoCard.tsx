@@ -8,7 +8,14 @@ import {
   CloseFullscreen,
 } from "@mui/icons-material"
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined"
-import { Card, CardContent, Stack, Tooltip, Typography } from "@mui/material"
+import {
+  Avatar,
+  Card,
+  CardContent,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material"
 import { useState } from "react"
 import { API_CONFIG } from "../config/api_config"
 import useAuth from "../contexts/AuthContextProvider"
@@ -238,7 +245,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
           alignItems='center'
           sx={{ mb: 1.5 }}>
           <Tooltip
-            title={props.isExpanded ? "Avslutt teatermodus" : "Teatermodus"}>
+            title={props.isExpanded ? "Exit theater mode" : "Theater mode"}>
             {props.isExpanded ? (
               <CloseFullscreen
                 sx={{
@@ -272,7 +279,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
             )}
           </Tooltip>
           {props.canDelete && (
-            <Tooltip title='Slett video'>
+            <Tooltip title='Delete video'>
               <DeleteOutlined
                 sx={{
                   "&:hover": {
@@ -289,7 +296,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
             </Tooltip>
           )}
           {renderLike()}
-          <Tooltip title='Del video'>
+          <Tooltip title='Share video'>
             <ShareOutlined
               sx={{
                 "&:hover": {
@@ -360,7 +367,27 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         </Typography>
         <Typography
           variant='body2'
-          sx={{ mt: 0.5, color: "#10b981", fontWeight: 500 }}>
+          sx={{
+            mt: 0.5,
+            color: "#10b981",
+            fontWeight: 500,
+            display: "flex",
+            alignItems: "center",
+            gap: 0.75,
+          }}>
+          <Avatar
+            src={props.file.user.thumbnail_uri || undefined}
+            sx={{
+              width: 20,
+              height: 20,
+              bgcolor: props.file.user.thumbnail_uri
+                ? "transparent"
+                : "#1e293b",
+              fontSize: 10,
+            }}>
+            {!props.file.user.thumbnail_uri &&
+              props.file.user.name.charAt(0).toUpperCase()}
+          </Avatar>
           {props.file.user.name}
         </Typography>
         <Typography variant='caption' sx={{ color: "#64748b" }}>

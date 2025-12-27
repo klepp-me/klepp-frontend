@@ -13,6 +13,7 @@ import {
   KleppVideoFilesResponse,
   KleppUserResponse,
   KleppVideoTagsResponse,
+  KleppUser,
 } from "../models/KleppVideoModels"
 import { fetchAuthSession } from "aws-amplify/auth"
 
@@ -126,6 +127,19 @@ class KleppVideoService {
     return axios.patch<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
       attrs,
+    )
+  }
+
+  uploadProfileThumbnail(file: File): Promise<AxiosResponse<KleppUser>> {
+    const formData = new FormData()
+    formData.append("file", file)
+    return axios.put<KleppUser>(
+      `${API_CONFIG.baseUrl}${API_CONFIG.userPath}`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        transformRequest: formData => formData,
+      },
     )
   }
 }

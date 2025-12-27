@@ -216,7 +216,7 @@ function KleppVideoGrid() {
             <KleppVideoCard
               file={item}
               username={item.user.name}
-              datetime={new Date(item.uploaded_at).toLocaleDateString("nb-NO", {
+              datetime={new Date(item.uploaded_at).toLocaleDateString("en-US", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
