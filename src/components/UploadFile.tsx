@@ -3,7 +3,6 @@ import {
   Container,
   Grid,
   LinearProgress,
-  ThemeProvider,
   Typography,
 } from "@mui/material"
 import React, { useState } from "react"
@@ -14,7 +13,6 @@ import useAuth from "../contexts/AuthContextProvider"
 import kleppVideoService from "../services/kleppvideoservice"
 import KleppVideoCard from "./KleppVideoCard"
 
-import theme from "../styles/theme"
 import Header from "./Header"
 import { KleppVideoFile } from "../models/KleppVideoModels"
 
@@ -37,8 +35,8 @@ function UploadFile() {
       setProgress(0)
       setIsUploading(true)
       kleppVideoService
-        .upload(selectedFile[0], (event: ProgressEvent<EventTarget>) => {
-          setProgress(Math.round((100 * event.loaded) / event.total))
+        .upload(selectedFile[0], event => {
+          setProgress(Math.round((100 * event.loaded) / (event.total ?? 1)))
           setMessage("Uploading..") // In case they had an error on first attempt, clear the error
         })
         .then(res => {
@@ -101,16 +99,8 @@ function UploadFile() {
           {user ? (
             <Button
               variant='contained'
-              color='secondary'
               onClick={uploadSelectedFile}
-              disabled={isUploading || !selectedFile}
-              sx={{
-                "&:hover": {
-                  color: "#39796b",
-                  cursor: "pointer",
-                  display: "block",
-                },
-              }}>
+              disabled={isUploading || !selectedFile}>
               Upload video
             </Button>
           ) : (
@@ -131,10 +121,7 @@ function UploadFile() {
           )}
         </div>
         {video && (
-          <Grid
-            item={true}
-            key={video.path}
-            sx={{ minWidth: 200, maxWidth: 600 }}>
+          <Grid key={video.path} sx={{ minWidth: 200, maxWidth: 600 }}>
             <KleppVideoCard
               file={video}
               username={video.user.name}
@@ -144,11 +131,15 @@ function UploadFile() {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
-                }
+                },
               )}
               canDelete={true}
               canHide={true}
               onDelete={() => deleteVideo()}
+              isExpanded={true}
+              onExpand={() => {
+                // Already expanded - no action needed
+              }}
             />
           </Grid>
         )}

@@ -1,30 +1,25 @@
 import ReactPlayer from "react-player"
 import { useSearchParams } from "react-router-dom"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import kleppVideoService from "../services/kleppvideoservice"
 import { KleppVideoFile } from "../models/KleppVideoModels"
 
-function KleppVideoPlayer() {
+function KleppVideoPreview() {
   const [searchParams] = useSearchParams()
   const [video, setVideo] = useState<KleppVideoFile | null>(null)
 
   useEffect(() => {
-    getVideo()
-  }, [searchParams])
-
-  function getVideo() {
-    if (`${searchParams.get("path")}` != null) {
-      kleppVideoService
-        .getFiles(`?path=${searchParams.get("path")}`)
-        .then(res => {
-          if (res.data.response) {
-            setVideo(res.data.response[0])
-          } else {
-            setVideo(null)
-          }
-        })
+    const path = searchParams.get("path")
+    if (path != null) {
+      kleppVideoService.getFiles(`?path=${path}`).then(res => {
+        if (res.data.response) {
+          setVideo(res.data.response[0])
+        } else {
+          setVideo(null)
+        }
+      })
     }
-  }
+  }, [searchParams])
 
   return (
     <div>
@@ -33,20 +28,13 @@ function KleppVideoPlayer() {
           className='klepp-videoplayer'
           width='100%'
           height='100%'
-          url={video?.uri}
+          src={video?.uri}
           light={false}
-          config={{
-            file: {
-              forceVideo: true,
-              attributes: {
-                controls: true,
-              },
-            },
-          }}
+          controls
         />
       </div>
     </div>
   )
 }
 
-export default KleppVideoPlayer
+export default KleppVideoPreview

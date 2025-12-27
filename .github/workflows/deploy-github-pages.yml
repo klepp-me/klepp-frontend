@@ -24,8 +24,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -33,13 +33,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Copy CNAME to build directory
-        run: cp CNAME build/CNAME
+      - name: Copy CNAME to dist directory
+        run: cp CNAME dist/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./build
+          path: ./dist
 
   deploy:
     environment:

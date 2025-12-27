@@ -4,6 +4,8 @@ import {
   ShareOutlined,
   Visibility,
   VisibilityOff,
+  OpenInFull,
+  CloseFullscreen,
 } from "@mui/icons-material"
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined"
 import { Card, CardContent, Stack, Tooltip, Typography } from "@mui/material"
@@ -22,6 +24,8 @@ interface KleppVideoCardProps {
   canDelete: boolean
   onDelete: (fileName: string) => void
   canHide: boolean
+  isExpanded: boolean
+  onExpand: () => void
 }
 
 function KleppVideoCard(props: KleppVideoCardProps) {
@@ -33,7 +37,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
   function enqueueSnackbarVariant(
     message: SnackbarMessage,
-    variant: VariantType
+    variant: VariantType,
   ) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(message, { variant })
@@ -125,7 +129,10 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         return null
       default:
         return (
-          <Typography variant='subtitle1' color='white' noWrap>
+          <Typography
+            variant='subtitle2'
+            sx={{ color: "#94a3b8", fontWeight: 500 }}
+            noWrap>
             {likes.length}
           </Typography>
         )
@@ -160,13 +167,21 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   function renderLike() {
     if (userName && likes.map(user => user.name).indexOf(userName) !== -1) {
       return (
-        <Stack direction='row' spacing={0.5} justifyContent='flex-end'>
+        <Stack
+          direction='row'
+          spacing={0.5}
+          justifyContent='flex-end'
+          alignItems='center'>
           <Tooltip title={tooltipLikes(false)}>
             <FavoriteOutlinedIcon
               sx={{
-                "&:hover": { cursor: "pointer", color: "#39796b" },
-                mb: 1,
-                color: "#ffffff",
+                "&:hover": {
+                  cursor: "pointer",
+                  color: "#34d399",
+                  transform: "scale(1.1)",
+                },
+                color: "#10b981",
+                transition: "all 0.2s ease",
               }}
               onClick={() => dislikeItem(props.file.path)}
             />
@@ -176,13 +191,21 @@ function KleppVideoCard(props: KleppVideoCardProps) {
       )
     } else {
       return (
-        <Stack direction='row' spacing={0.5} justifyContent='flex-end'>
+        <Stack
+          direction='row'
+          spacing={0.5}
+          justifyContent='flex-end'
+          alignItems='center'>
           <Tooltip title={tooltipLikes(true)}>
             <FavoriteBorderOutlined
               sx={{
-                "&:hover": { cursor: "pointer", color: "#39796b" },
-                mb: 1,
-                color: "#ffffff",
+                "&:hover": {
+                  cursor: "pointer",
+                  color: "#10b981",
+                  transform: "scale(1.1)",
+                },
+                color: "#94a3b8",
+                transition: "all 0.2s ease",
               }}
               onClick={() => likeItem(props.file.path)}
             />
@@ -194,21 +217,72 @@ function KleppVideoCard(props: KleppVideoCardProps) {
   }
 
   return (
-    <Card square={true} elevation={2} key={props.datetime.toString()}>
+    <Card
+      elevation={0}
+      key={props.datetime.toString()}
+      sx={{
+        maxWidth: props.isExpanded ? "50%" : "none",
+        margin: props.isExpanded ? "0 auto" : 0,
+        transition: "all 0.3s ease",
+      }}>
       <KleppVideoPlayer
         embedUrl={props.file.uri}
         thumbnailUri={encodeURI(props.file.thumbnail_uri)}
+        isExpanded={props.isExpanded}
       />
-      <CardContent
-        sx={{ "&:last-child": { paddingBottom: "16px" }, paddingTop: 1 }}>
-        <Stack direction='row' spacing={2} justifyContent='flex-end'>
+      <CardContent>
+        <Stack
+          direction='row'
+          spacing={1.5}
+          justifyContent='flex-end'
+          alignItems='center'
+          sx={{ mb: 1.5 }}>
+          <Tooltip
+            title={props.isExpanded ? "Avslutt teatermodus" : "Teatermodus"}>
+            {props.isExpanded ? (
+              <CloseFullscreen
+                sx={{
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: "#10b981",
+                    transform: "scale(1.1)",
+                  },
+                  color: "#94a3b8",
+                  transition: "all 0.2s ease",
+                  fontSize: 20,
+                  marginRight: "auto",
+                }}
+                onClick={props.onExpand}
+              />
+            ) : (
+              <OpenInFull
+                sx={{
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: "#10b981",
+                    transform: "scale(1.1)",
+                  },
+                  color: "#94a3b8",
+                  transition: "all 0.2s ease",
+                  fontSize: 20,
+                  marginRight: "auto",
+                }}
+                onClick={props.onExpand}
+              />
+            )}
+          </Tooltip>
           {props.canDelete && (
             <Tooltip title='Slett video'>
               <DeleteOutlined
                 sx={{
-                  "&:hover": { cursor: "pointer", color: "#39796b" },
-                  mb: 1,
-                  color: "#004d40",
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: "#ef4444",
+                    transform: "scale(1.1)",
+                  },
+                  color: "#94a3b8",
+                  transition: "all 0.2s ease",
+                  fontSize: 20,
                 }}
                 onClick={() => deleteItem(props.file.path)}
               />
@@ -218,13 +292,18 @@ function KleppVideoCard(props: KleppVideoCardProps) {
           <Tooltip title='Del video'>
             <ShareOutlined
               sx={{
-                "&:hover": { cursor: "pointer", color: "#39796b" },
-                mb: 1,
-                color: "#004d40",
+                "&:hover": {
+                  cursor: "pointer",
+                  color: "#10b981",
+                  transform: "scale(1.1)",
+                },
+                color: "#94a3b8",
+                transition: "all 0.2s ease",
+                fontSize: 20,
               }}
               onClick={() =>
                 copyToClipboard(
-                  `${API_CONFIG.shareBaseUrl}?path=${props.file.path}`
+                  `${API_CONFIG.shareBaseUrl}?path=${props.file.path}`,
                 )
               }
             />
@@ -234,9 +313,14 @@ function KleppVideoCard(props: KleppVideoCardProps) {
               {!isHidden ? (
                 <VisibilityOff
                   sx={{
-                    "&:hover": { cursor: "pointer", color: "#39796b" },
-                    mb: 1,
-                    color: "#004d40",
+                    "&:hover": {
+                      cursor: "pointer",
+                      color: "#10b981",
+                      transform: "scale(1.1)",
+                    },
+                    color: "#94a3b8",
+                    transition: "all 0.2s ease",
+                    fontSize: 20,
                   }}
                   onClick={() =>
                     toggleItemVisibility(isHidden, props.file.path)
@@ -245,9 +329,14 @@ function KleppVideoCard(props: KleppVideoCardProps) {
               ) : (
                 <Visibility
                   sx={{
-                    "&:hover": { cursor: "pointer", color: "#39796b" },
-                    mb: 1,
-                    color: "#004d40",
+                    "&:hover": {
+                      cursor: "pointer",
+                      color: "#10b981",
+                      transform: "scale(1.1)",
+                    },
+                    color: "#94a3b8",
+                    transition: "all 0.2s ease",
+                    fontSize: 20,
                   }}
                   onClick={() =>
                     toggleItemVisibility(isHidden, props.file.path)
@@ -259,20 +348,22 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         </Stack>
         <Typography
           variant='body1'
-          color='white'
           sx={{
-            "&:hover": { cursor: "pointer", color: "#39796b" },
-            mb: 1,
-            color: "#ffffff",
+            "&:hover": { cursor: "pointer", color: "#10b981" },
+            color: "#f1f5f9",
+            fontWeight: 500,
+            transition: "color 0.2s ease",
           }}
           noWrap
           onClick={() => openVideoClicked()}>
           {props.file.display_name}
         </Typography>
-        <Typography variant='body2' color='white' sx={{ mt: 1 }}>
+        <Typography
+          variant='body2'
+          sx={{ mt: 0.5, color: "#10b981", fontWeight: 500 }}>
           {props.file.user.name}
         </Typography>
-        <Typography variant='caption' color='white'>
+        <Typography variant='caption' sx={{ color: "#64748b" }}>
           {props.datetime}
         </Typography>
       </CardContent>

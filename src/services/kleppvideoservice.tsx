@@ -1,4 +1,9 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import axios, {
+  AxiosProgressEvent,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios"
 import { API_CONFIG } from "../config/api_config"
 
 import {
@@ -9,39 +14,29 @@ import {
   KleppUserResponse,
   KleppVideoTagsResponse,
 } from "../models/KleppVideoModels"
-import { Auth } from "aws-amplify"
+import { fetchAuthSession } from "aws-amplify/auth"
 
 type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
 
-const onRequest = (config: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
-  // If the user is authenticated, inject the bearer token
-  // If the user is anonymous, return default config
-  config = {
-    ...config,
-    headers: {
-      ...config.headers,
-      accept: "application/json",
-      "Content-Type":
-        config.headers &&
-        config.headers["Content-Type"] === "multipart/form-data"
-          ? "multipart/form-data"
-          : "application/json",
-    },
+const onRequest = async (
+  config: InternalAxiosRequestConfig,
+): Promise<InternalAxiosRequestConfig> => {
+  config.headers.set("accept", "application/json")
+  if (config.headers.get("Content-Type") !== "multipart/form-data") {
+    config.headers.set("Content-Type", "application/json")
   }
-  return Auth.currentSession()
-    .then(session => {
-      const jwtToken = session.getAccessToken().getJwtToken()
-      return {
-        ...config,
-        headers: {
-          ...config.headers,
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      }
-    })
-    .catch(() => {
-      return config
-    })
+
+  try {
+    const session = await fetchAuthSession()
+    const jwtToken = session.tokens?.accessToken?.toString()
+    if (jwtToken) {
+      config.headers.set("Authorization", `Bearer ${jwtToken}`)
+    }
+  } catch {
+    // User is not authenticated, continue without token
+  }
+
+  return config
 }
 
 axios.interceptors.request.use(onRequest)
@@ -49,7 +44,7 @@ axios.interceptors.request.use(onRequest)
 class KleppVideoService {
   upload(
     file: File,
-    onUploadProgress: (event: ProgressEvent<EventTarget>) => void
+    onUploadProgress: (event: AxiosProgressEvent) => void,
   ): VideoResponse {
     const formData = new FormData()
     formData.append("file", file)
@@ -61,7 +56,7 @@ class KleppVideoService {
         // https://github.com/axios/axios/issues/4406 - Bug in current axios version
         transformRequest: formData => formData, // TODO: Remove when bug is fixed
         onUploadProgress,
-      }
+      },
     )
   }
 
@@ -69,19 +64,19 @@ class KleppVideoService {
     console.log(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`)
 
     return axios.get<KleppVideoFilesResponse>(
-      `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`,
     )
   }
 
   getUsers(): Promise<AxiosResponse<KleppUserResponse>> {
     return axios.get<KleppUserResponse>(
-      `${API_CONFIG.baseUrl}${API_CONFIG.usersPath}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.usersPath}`,
     )
   }
 
   getTags(): Promise<AxiosResponse<KleppVideoTagsResponse>> {
     return axios.get<KleppVideoTagsResponse>(
-      `${API_CONFIG.baseUrl}${API_CONFIG.tagsPath}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.tagsPath}`,
     )
   }
 
@@ -94,7 +89,7 @@ class KleppVideoService {
 
     return axios.delete<KleppVideoDeleteResponse>(
       `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`,
-      config
+      config,
     )
   }
 
@@ -106,7 +101,7 @@ class KleppVideoService {
 
     return axios.post<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      data
+      data,
     )
   }
 
@@ -121,7 +116,7 @@ class KleppVideoService {
 
     return axios.delete<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      config
+      config,
     )
   }
 
@@ -130,7 +125,7 @@ class KleppVideoService {
 
     return axios.patch<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      attrs
+      attrs,
     )
   }
 }

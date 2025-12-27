@@ -26,111 +26,141 @@ function Header() {
   }
 
   const navigate = useNavigate()
+
+  const headerButtonSx = {
+    borderRadius: 1.5,
+    px: 1.5,
+    py: 0.75,
+    transition: "all 0.2s ease",
+    "&:hover": {
+      backgroundColor: "rgba(16, 185, 129, 0.1)",
+      color: "#10b981",
+    },
+  }
+
   if (user) {
     return (
       <Box sx={{ flexGrow: 1 }}>
         <HideOnScroll>
-          <AppBar position='fixed' elevation={4}>
-            <Toolbar variant='regular'>
-              <Typography
-                variant='h6'
-                color='inherit'
-                flexGrow='1'
-                component='div'
-                sx={{ textAlign: "left", "&:hover": { cursor: "pointer" } }}
-                onClick={navigateToHome}>
-                <div
-                  className='frontPage'
-                  style={{
-                    paddingTop: 16,
-                    paddingBottom: 16,
-                    display: "flex",
-                    alignItems: "center",
+          <AppBar position='fixed' elevation={0}>
+            <Toolbar variant='regular' sx={{ px: { xs: 2, md: 4 } }}>
+              <Box
+                onClick={navigateToHome}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexGrow: 1,
+                  cursor: "pointer",
+                  py: 1.5,
+                  "&:hover": {
+                    "& .logo-text": {
+                      color: "#10b981",
+                    },
+                  },
+                }}>
+                <img
+                  src='../assets/kleppwhite.png'
+                  alt='klepp-frontend-logo'
+                  width='36'
+                  height='40'
+                  style={{ marginRight: "12px" }}
+                />
+                <Typography
+                  className='logo-text'
+                  variant='h6'
+                  sx={{
+                    fontWeight: 700,
+                    letterSpacing: "-0.02em",
+                    transition: "color 0.2s ease",
                   }}>
-                  <img
-                    src='../assets/kleppwhite.png'
-                    alt='klepp-frontend-logo'
-                    width='40'
-                    height='44'
-                    style={{ marginRight: "16px", marginTop: "auto" }}
-                  />
-                  <span>Klepp</span>
-                </div>
-              </Typography>
-              <Tooltip title='Last opp fil'>
-                <IconButton
-                  onClick={navigateToUpload}
-                  color='secondary'
-                  sx={{ "&:hover": { color: "#39796b", cursor: "pointer" } }}>
-                  {" "}
-                  <UploadOutlined />
-                  <Typography
-                    variant='h6'
-                    color='white'
-                    component='div'
-                    sx={{ textAlign: "left", flexGrow: 1, ml: 1 }}>
-                    Nytt klepp
-                  </Typography>
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='Logg ut'>
-                <IconButton
-                  onClick={signOut}
-                  color='secondary'
-                  sx={{ "&:hover": { color: "#39796b", cursor: "pointer" } }}>
-                  {" "}
-                  <LogoutOutlined />
-                  <Typography
-                    variant='h6'
-                    color='white'
-                    component='div'
-                    sx={{ textAlign: "left", flexGrow: 1, ml: 1 }}>
-                    {user.getUsername()}
-                  </Typography>
-                </IconButton>
-              </Tooltip>
+                  Klepp
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Tooltip title='Last opp fil'>
+                  <IconButton
+                    onClick={navigateToUpload}
+                    sx={{
+                      ...headerButtonSx,
+                      background:
+                        "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                      color: "white",
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg, #34d399 0%, #10b981 100%)",
+                        boxShadow: "0 2px 8px rgba(16, 185, 129, 0.4)",
+                      },
+                    }}>
+                    <UploadOutlined sx={{ mr: 0.5, fontSize: 18 }} />
+                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                      Nytt klepp
+                    </Typography>
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Logg ut'>
+                  <IconButton onClick={signOut} sx={headerButtonSx}>
+                    <LogoutOutlined
+                      sx={{ mr: 0.5, fontSize: 18, color: "#94a3b8" }}
+                    />
+                    <Typography
+                      variant='body2'
+                      sx={{ color: "#94a3b8", fontWeight: 500 }}>
+                      {user.username}
+                    </Typography>
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Toolbar>
           </AppBar>
         </HideOnScroll>
-        <Toolbar sx={{ background: "#ffffff00" }} />
+        <Toolbar sx={{ background: "transparent" }} />
       </Box>
     )
   } else {
     return (
       <Box sx={{ flexGrow: 1 }}>
         <HideOnScroll>
-          <AppBar position='fixed' elevation={4}>
-            <Toolbar variant='regular'>
-              <Typography
-                variant='h6'
-                color='inherit'
-                component='div'
+          <AppBar position='fixed' elevation={0}>
+            <Toolbar variant='regular' sx={{ px: { xs: 2, md: 4 } }}>
+              <Box
                 onClick={navigateToHome}
                 sx={{
-                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
                   flexGrow: 1,
-                  "&:hover": { cursor: "pointer" },
+                  cursor: "pointer",
+                  py: 1.5,
+                  "&:hover": {
+                    "& .logo-text": {
+                      color: "#10b981",
+                    },
+                  },
                 }}>
-                Klepp
-              </Typography>
-              <IconButton
-                onClick={navigateToLogin}
-                color='secondary'
-                sx={{ "&:hover": { color: "#39796b", cursor: "pointer" } }}>
-                {" "}
-                <LoginOutlined />
                 <Typography
+                  className='logo-text'
                   variant='h6'
-                  color='inherit'
-                  component='div'
-                  sx={{ textAlign: "left", flexGrow: 1, ml: 1 }}>
+                  sx={{
+                    fontWeight: 700,
+                    letterSpacing: "-0.02em",
+                    transition: "color 0.2s ease",
+                  }}>
+                  Klepp
+                </Typography>
+              </Box>
+              <IconButton onClick={navigateToLogin} sx={headerButtonSx}>
+                <LoginOutlined
+                  sx={{ mr: 0.5, fontSize: 18, color: "#10b981" }}
+                />
+                <Typography
+                  variant='body2'
+                  sx={{ color: "#f1f5f9", fontWeight: 500 }}>
                   Logg inn
                 </Typography>
               </IconButton>
             </Toolbar>
           </AppBar>
         </HideOnScroll>
-        <Toolbar sx={{ background: "#ffffff00" }} />
+        <Toolbar sx={{ background: "transparent" }} />
       </Box>
     )
   }

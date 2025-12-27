@@ -1,11 +1,5 @@
-import {
-  Autocomplete,
-  Grid,
-  TextField,
-  Typography,
-  Button,
-} from "@mui/material"
-import { debounce as Debouncer } from "lodash"
+import { Autocomplete, Grid, TextField, Button } from "@mui/material"
+import debounce from "lodash/debounce"
 import React, { SyntheticEvent, useEffect, useState } from "react"
 import useAuth from "../contexts/AuthContextProvider"
 import { KleppVideoFile } from "../models/KleppVideoModels"
@@ -33,6 +27,9 @@ function KleppVideoGrid() {
   const [items, setItems] = useState<KleppVideoFile[]>([])
   const [users, setUsers] = useState<AutocompleteOption[]>([])
   const [tags, setTags] = useState<AutocompleteOption[]>([])
+  const [expandedVideoPath, setExpandedVideoPath] = useState<string | null>(
+    null,
+  )
 
   const { userName } = useAuth()
   const { enqueueSnackbar } = useSnackbar()
@@ -53,8 +50,8 @@ function KleppVideoGrid() {
   const paginationLimit = 12
 
   const handleUsernameSearch = (
-    event: SyntheticEvent<Element, Event>,
-    value: string | null
+    _event: SyntheticEvent<Element, Event>,
+    value: string | null,
   ) => {
     const queryString = value != null ? value : ""
     const query: QueryType = {
@@ -65,8 +62,8 @@ function KleppVideoGrid() {
   }
 
   const handleTagsSearch = (
-    event: SyntheticEvent<Element, Event>,
-    value: string[] | null
+    _event: SyntheticEvent<Element, Event>,
+    value: string[] | null,
   ) => {
     let queryString = ""
     if (value) {
@@ -81,22 +78,23 @@ function KleppVideoGrid() {
     setTagsQuery(query)
   }
 
-  const handleTextSearch = (event: React.ChangeEvent<any>) => {
+  const handleTextSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value == null) {
       return
     }
     const titleQuery = event.target.value
-    setTextQuery(titleQuery)
+    setTextQuery({ query: titleQuery, type: VIDEO_QUERY_TYPE.NAME })
   }
 
-  const debouncedUsernameSearch = Debouncer(handleUsernameSearch, 300)
-  const debouncedTagSearch = Debouncer(handleTagsSearch, 300)
-  const debouncedTextSearch = Debouncer(handleTextSearch, 500)
+  const debouncedUsernameSearch = debounce(handleUsernameSearch, 300)
+  const debouncedTagSearch = debounce(handleTagsSearch, 300)
+  const debouncedTextSearch = debounce(handleTextSearch, 500)
 
   useEffect(() => {
     fetchItems()
     fetchUsers()
     fetchTags()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userNameQuery, tagsQuery, textQuery])
 
   function fetchItems(fromLoad = false) {
@@ -148,7 +146,7 @@ function KleppVideoGrid() {
       }
 
       queryString = queryString.concat(
-        `offset=${offset}&limit=${paginationLimit}`
+        `offset=${offset}&limit=${paginationLimit}`,
       )
 
       kleppvideoservice
@@ -198,17 +196,23 @@ function KleppVideoGrid() {
     setItems(prevState => [...prevState.filter(item => item.path !== fileName)])
   }
 
+  function handleVideoExpand(path: string) {
+    setExpandedVideoPath(prev => (prev === path ? null : path))
+  }
+
   function renderItems() {
     return items
       .filter(item => item.uri.endsWith(".mp4")) // Maybe redundant. Done in aws
       .map(item => {
+        const isExpanded = expandedVideoPath === item.path
         return (
           <Grid
-            item={true}
-            xs={2}
-            sm={4}
+            size={isExpanded ? { xs: 16 } : { xs: 2, sm: 4 }}
             key={item.path}
-            sx={{ minWidth: 200 }}>
+            sx={{
+              minWidth: isExpanded ? "100%" : 200,
+              transition: "all 0.3s ease",
+            }}>
             <KleppVideoCard
               file={item}
               username={item.user.name}
@@ -220,6 +224,8 @@ function KleppVideoGrid() {
               canDelete={userName != null && item.user.name === userName}
               canHide={userName != null && item.user.name === userName}
               onDelete={() => itemDeleted(item.path)}
+              isExpanded={isExpanded}
+              onExpand={() => handleVideoExpand(item.path)}
             />
           </Grid>
         )
@@ -231,80 +237,94 @@ function KleppVideoGrid() {
   }
 
   return (
-    <div style={{ marginTop: 24, paddingBottom: 16 }}>
-      <Grid
-        className='filterGrid'
-        spacing={2}
-        columns={4}
-        direction='row'
-        container
-        style={{ marginLeft: 32 }}>
-        <TextField
-          id='textfield-videotitle-search'
-          onChange={debouncedTextSearch}
-          color='primary'
-          label='Søk etter video'
-          sx={{ width: 300, marginTop: 2, marginInlineEnd: 2 }}
-        />
-        <Autocomplete
-          disablePortal
-          id='autocomplete-box-username'
-          options={users.map(user => user.label)}
-          onChange={debouncedUsernameSearch}
-          sx={{ width: 300, marginInlineEnd: 2, marginTop: 2 }}
-          renderInput={params => (
-            <TextField
-              {...params}
-              color='primary'
-              label='Søk etter brukernavn'
-            />
-          )}
-        />
-        <Autocomplete
-          multiple
-          disablePortal
-          id='autocomplete-box-tags'
-          options={tags.map(tag => tag.label)}
-          onChange={debouncedTagSearch}
-          sx={{ width: 300, marginInlineEnd: 2, marginTop: 2 }}
-          renderInput={params => (
-            <TextField {...params} color='primary' label='Søk etter tags' />
-          )}
-        />
-      </Grid>
-      <Typography
-        variant='h4'
-        color='white'
-        sx={{ mt: 2, textAlign: "left", ml: 2 }}>
-        Nyeste videoer
-      </Typography>
+    <div style={{ marginTop: 24, paddingBottom: 48 }}>
+      {/* Search Section */}
       <div
-        className='videoGrid'
-        style={{ marginTop: 12, marginLeft: 16, marginRight: 16 }}>
+        style={{
+          background: "rgba(30, 41, 59, 0.5)",
+          borderRadius: 16,
+          padding: "24px 32px",
+          margin: "0 24px 32px 24px",
+          border: "1px solid rgba(148, 163, 184, 0.1)",
+        }}>
+        <Grid
+          className='filterGrid'
+          spacing={2}
+          columns={12}
+          direction='row'
+          container
+          alignItems='center'>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField
+              id='textfield-videotitle-search'
+              onChange={debouncedTextSearch}
+              color='primary'
+              label='Søk etter video'
+              fullWidth
+              placeholder='Skriv inn videonavn...'
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Autocomplete
+              disablePortal
+              id='autocomplete-box-username'
+              options={users.map(user => user.label)}
+              onChange={debouncedUsernameSearch}
+              fullWidth
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  color='primary'
+                  label='Søk etter brukernavn'
+                  placeholder='Velg bruker...'
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Autocomplete
+              multiple
+              disablePortal
+              id='autocomplete-box-tags'
+              options={tags.map(tag => tag.label)}
+              onChange={debouncedTagSearch}
+              fullWidth
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  color='primary'
+                  label='Søk etter tags'
+                  placeholder='Velg tags...'
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </div>
+
+      {/* Video Grid */}
+      <div className='videoGrid' style={{ margin: "0 24px" }}>
         {items && (
           <Grid
             direction='row'
             container
-            spacing={2}
+            spacing={3}
             columns={16}
             key={"kleppVideoGrid"}>
             {renderItems()}
           </Grid>
         )}
       </div>
+
+      {/* Load More Button */}
       <Button
         variant='contained'
-        color='secondary'
         onClick={onLoadMoreVideosClicked}
         sx={{
-          "&:hover": {
-            color: "#39796b",
-            cursor: "pointer",
-          },
-          marginTop: 4,
+          marginTop: 5,
           marginBottom: 2,
         }}>
-        Load more videos
+        Last inn flere videoer
       </Button>
     </div>
   )

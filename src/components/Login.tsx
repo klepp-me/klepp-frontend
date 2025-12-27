@@ -1,9 +1,7 @@
 import { Authenticator, View, Image, Grid, Flex } from "@aws-amplify/ui-react"
-import { ThemeProvider } from "@emotion/react"
 import { Typography } from "@mui/material"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import theme from ".././styles/theme"
 import useAuth from "../contexts/AuthContextProvider"
 
 function Login() {
