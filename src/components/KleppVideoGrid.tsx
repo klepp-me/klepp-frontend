@@ -5,7 +5,7 @@ import {
   Typography,
   Button,
 } from "@mui/material"
-import { debounce as Debouncer } from "lodash"
+import debounce from "lodash/debounce"
 import React, { SyntheticEvent, useEffect, useState } from "react"
 import useAuth from "../contexts/AuthContextProvider"
 import { KleppVideoFile } from "../models/KleppVideoModels"
@@ -53,7 +53,7 @@ function KleppVideoGrid() {
   const paginationLimit = 12
 
   const handleUsernameSearch = (
-    event: SyntheticEvent<Element, Event>,
+    _event: SyntheticEvent<Element, Event>,
     value: string | null
   ) => {
     const queryString = value != null ? value : ""
@@ -65,7 +65,7 @@ function KleppVideoGrid() {
   }
 
   const handleTagsSearch = (
-    event: SyntheticEvent<Element, Event>,
+    _event: SyntheticEvent<Element, Event>,
     value: string[] | null
   ) => {
     let queryString = ""
@@ -86,12 +86,12 @@ function KleppVideoGrid() {
       return
     }
     const titleQuery = event.target.value
-    setTextQuery(titleQuery)
+    setTextQuery({ query: titleQuery, type: VIDEO_QUERY_TYPE.NAME })
   }
 
-  const debouncedUsernameSearch = Debouncer(handleUsernameSearch, 300)
-  const debouncedTagSearch = Debouncer(handleTagsSearch, 300)
-  const debouncedTextSearch = Debouncer(handleTextSearch, 500)
+  const debouncedUsernameSearch = debounce(handleUsernameSearch, 300)
+  const debouncedTagSearch = debounce(handleTagsSearch, 300)
+  const debouncedTextSearch = debounce(handleTextSearch, 500)
 
   useEffect(() => {
     fetchItems()
@@ -204,12 +204,7 @@ function KleppVideoGrid() {
       .filter(item => item.uri.endsWith(".mp4")) // Maybe redundant. Done in aws
       .map(item => {
         return (
-          <Grid
-            item={true}
-            xs={2}
-            sm={4}
-            key={item.path}
-            sx={{ minWidth: 200 }}>
+          <Grid size={{ xs: 2, sm: 4 }} key={item.path} sx={{ minWidth: 200 }}>
             <KleppVideoCard
               file={item}
               username={item.user.name}

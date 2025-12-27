@@ -1,4 +1,3 @@
-import { HubPayload } from "@aws-amplify/core"
 import { signOut as amplifySignOut, getCurrentUser } from "aws-amplify/auth"
 import { Hub } from "aws-amplify/utils"
 
@@ -8,15 +7,6 @@ export default function useAuth() {
   const [user, setUser] = useState<{ username?: string } | null | undefined>()
   const [userName, setUserName] = useState<string>()
 
-  const handleAuth = (payload: HubPayload) => {
-    switch (payload.event) {
-      case "signIn":
-        return setUser(payload.data)
-      case "signOut":
-        return setUser
-    }
-  }
-
   const signOut = () => {
     amplifySignOut()
     setUserName("")
@@ -25,23 +15,26 @@ export default function useAuth() {
 
   useEffect(() => {
     getCurrentUser()
-      .then(user => {
-        if (user) {
-          setUser(user)
-          setUserName(user.username)
+      .then(currentUser => {
+        if (currentUser) {
+          setUser(currentUser)
+          setUserName(currentUser.username)
         }
       })
       .catch(console.error)
 
-    Hub.listen("auth", data => {
-      handleAuth(data.payload)
+    const unsubscribe = Hub.listen("auth", data => {
+      switch (data.payload.event) {
+        case "signedIn":
+          setUser(data.payload.data as { username?: string })
+          break
+        case "signedOut":
+          setUser(null)
+          break
+      }
     })
 
-    return () =>
-      Hub.remove("auth", data => {
-        const { payload } = data
-        handleAuth(payload)
-      })
+    return unsubscribe
   }, [])
 
   return {

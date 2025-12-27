@@ -1,4 +1,9 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import axios, {
+  AxiosProgressEvent,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios"
 import { API_CONFIG } from "../config/api_config"
 
 import {
@@ -13,38 +18,25 @@ import { fetchAuthSession } from "aws-amplify/auth"
 
 type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
 
-const onRequest = (config: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
-  // If the user is authenticated, inject the bearer token
-  // If the user is anonymous, return default config
-  config = {
-    ...config,
-    headers: {
-      ...config.headers,
-      accept: "application/json",
-      "Content-Type":
-        config.headers &&
-        config.headers["Content-Type"] === "multipart/form-data"
-          ? "multipart/form-data"
-          : "application/json",
-    },
+const onRequest = async (
+  config: InternalAxiosRequestConfig
+): Promise<InternalAxiosRequestConfig> => {
+  config.headers.set("accept", "application/json")
+  if (config.headers.get("Content-Type") !== "multipart/form-data") {
+    config.headers.set("Content-Type", "application/json")
   }
-  return fetchAuthSession()
-    .then(session => {
-      const jwtToken = session.tokens?.accessToken?.toString()
-      if (jwtToken) {
-        return {
-          ...config,
-          headers: {
-            ...config.headers,
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        }
-      }
-      return config
-    })
-    .catch(() => {
-      return config
-    })
+
+  try {
+    const session = await fetchAuthSession()
+    const jwtToken = session.tokens?.accessToken?.toString()
+    if (jwtToken) {
+      config.headers.set("Authorization", `Bearer ${jwtToken}`)
+    }
+  } catch {
+    // User is not authenticated, continue without token
+  }
+
+  return config
 }
 
 axios.interceptors.request.use(onRequest)
@@ -52,7 +44,7 @@ axios.interceptors.request.use(onRequest)
 class KleppVideoService {
   upload(
     file: File,
-    onUploadProgress: (event: ProgressEvent<EventTarget>) => void
+    onUploadProgress: (event: AxiosProgressEvent) => void
   ): VideoResponse {
     const formData = new FormData()
     formData.append("file", file)

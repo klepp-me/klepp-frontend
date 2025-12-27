@@ -1,16 +1,4 @@
 {
-  "browserslist": {
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ],
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ]
-  },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.13.2",
     "@emotion/react": "^11.14.0",
@@ -18,53 +6,47 @@
     "@fontsource/roboto": "^5.2.9",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
-    "@types/lodash": "^4.17.21",
-    "@types/node": "^25.0.3",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
     "aws-amplify": "^6.15.9",
     "axios": "^1.13.2",
-    "icons": "^1.0.0",
     "notistack": "^3.0.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-player": "^3.4.0",
     "react-router-dom": "^7.11.0",
-    "react-scripts": "5.0.1",
     "typeface-roboto": "^1.1.13",
-    "typescript": "^5.9.3",
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.50.0",
-    "@typescript-eslint/parser": "^8.50.0",
-    "eslint": "^8.13.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
+    "@eslint/js": "^9.17.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/lodash": "^4.17.21",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
     "gh-pages": "^6.3.0",
-    "prettier": "^3.7.4"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "globals": "^15.14.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.18.2",
+    "vite": "^6.0.5"
   },
   "homepage": "https://klepp.me",
   "name": "klepp-frontend",
   "private": false,
   "scripts": {
-    "build": "react-scripts build",
-    "deploy": "gh-pages -d build",
-    "eject": "react-scripts eject",
+    "build": "tsc -b && vite build",
+    "deploy": "gh-pages -d dist",
+    "dev": "vite",
+    "lint": "eslint .",
     "predeploy": "npm run build",
-    "start": "react-scripts start",
-    "test": "react-scripts test"
+    "preview": "vite preview"
   },
+  "type": "module",
   "version": "0.1.0"
 }

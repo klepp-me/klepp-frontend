@@ -21,7 +21,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <StyledSnackbarProvider maxSnack={3}>
-        <HashRouter basename={process.env.PUBLIC_URL}>
+        <HashRouter basename={import.meta.env.BASE_URL}>
           <Routes>
             <Route path='/' element={<Main />} />
             <Route path='/login' element={<Login />} />

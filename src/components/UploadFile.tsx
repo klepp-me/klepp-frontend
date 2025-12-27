@@ -35,8 +35,8 @@ function UploadFile() {
       setProgress(0)
       setIsUploading(true)
       kleppVideoService
-        .upload(selectedFile[0], (event: ProgressEvent<EventTarget>) => {
-          setProgress(Math.round((100 * event.loaded) / event.total))
+        .upload(selectedFile[0], event => {
+          setProgress(Math.round((100 * event.loaded) / (event.total ?? 1)))
           setMessage("Uploading..") // In case they had an error on first attempt, clear the error
         })
         .then(res => {
@@ -129,10 +129,7 @@ function UploadFile() {
           )}
         </div>
         {video && (
-          <Grid
-            item={true}
-            key={video.path}
-            sx={{ minWidth: 200, maxWidth: 600 }}>
+          <Grid key={video.path} sx={{ minWidth: 200, maxWidth: 600 }}>
             <KleppVideoCard
               file={video}
               username={video.user.name}
