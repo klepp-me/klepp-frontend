@@ -99,16 +99,8 @@ function UploadFile() {
           {user ? (
             <Button
               variant='contained'
-              color='secondary'
               onClick={uploadSelectedFile}
-              disabled={isUploading || !selectedFile}
-              sx={{
-                "&:hover": {
-                  color: "#39796b",
-                  cursor: "pointer",
-                  display: "block",
-                },
-              }}>
+              disabled={isUploading || !selectedFile}>
               Upload video
             </Button>
           ) : (
@@ -144,6 +136,10 @@ function UploadFile() {
               canDelete={true}
               canHide={true}
               onDelete={() => deleteVideo()}
+              isExpanded={true}
+              onExpand={() => {
+                // Already expanded - no action needed
+              }}
             />
           </Grid>
         )}

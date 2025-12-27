@@ -1,12 +1,6 @@
 .App {
   text-align: center;
-  background: rgb(15, 32, 39);
-  background: linear-gradient(
-    90deg,
-    rgba(15, 32, 39, 1) 0%,
-    rgba(54, 71, 79, 1) 50%,
-    rgba(44, 83, 100, 1) 100%
-  );
+  min-height: 100vh;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -16,15 +10,31 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(--color-accent);
 }
 
 .klepp-videocontainer {
   position: relative;
   padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  background: #1e293b;
 }
 
-.klepp-videocontainer > div {
+.klepp-videocontainer > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.klepp-videocontainer-expanded {
+  padding-top: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.klepp-videocontainer-expanded > * {
   position: absolute;
   top: 0;
   left: 0;
@@ -33,7 +43,33 @@
 }
 
 input[type="file"] {
-  margin-right: 10em;
+  margin-right: 2em;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  padding: 12px 16px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="file"]:hover {
+  border-color: var(--color-accent);
+}
+
+input[type="file"]::file-selector-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  font-size: 1.05em;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  margin-right: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
 }
