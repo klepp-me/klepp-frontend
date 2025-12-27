@@ -28,7 +28,7 @@ function KleppVideoGrid() {
   const [users, setUsers] = useState<AutocompleteOption[]>([])
   const [tags, setTags] = useState<AutocompleteOption[]>([])
   const [expandedVideoPath, setExpandedVideoPath] = useState<string | null>(
-    null
+    null,
   )
 
   const { userName } = useAuth()
@@ -51,7 +51,7 @@ function KleppVideoGrid() {
 
   const handleUsernameSearch = (
     _event: SyntheticEvent<Element, Event>,
-    value: string | null
+    value: string | null,
   ) => {
     const queryString = value != null ? value : ""
     const query: QueryType = {
@@ -63,7 +63,7 @@ function KleppVideoGrid() {
 
   const handleTagsSearch = (
     _event: SyntheticEvent<Element, Event>,
-    value: string[] | null
+    value: string[] | null,
   ) => {
     let queryString = ""
     if (value) {
@@ -146,7 +146,7 @@ function KleppVideoGrid() {
       }
 
       queryString = queryString.concat(
-        `offset=${offset}&limit=${paginationLimit}`
+        `offset=${offset}&limit=${paginationLimit}`,
       )
 
       kleppvideoservice

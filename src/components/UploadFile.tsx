@@ -131,7 +131,7 @@ function UploadFile() {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
-                }
+                },
               )}
               canDelete={true}
               canHide={true}

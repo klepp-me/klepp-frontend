@@ -37,7 +37,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
 
   function enqueueSnackbarVariant(
     message: SnackbarMessage,
-    variant: VariantType
+    variant: VariantType,
   ) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(message, { variant })
@@ -303,7 +303,7 @@ function KleppVideoCard(props: KleppVideoCardProps) {
               }}
               onClick={() =>
                 copyToClipboard(
-                  `${API_CONFIG.shareBaseUrl}?path=${props.file.path}`
+                  `${API_CONFIG.shareBaseUrl}?path=${props.file.path}`,
                 )
               }
             />

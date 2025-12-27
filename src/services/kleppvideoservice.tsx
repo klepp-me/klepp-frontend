@@ -19,7 +19,7 @@ import { fetchAuthSession } from "aws-amplify/auth"
 type VideoResponse = Promise<AxiosResponse<KleppVideoFile>>
 
 const onRequest = async (
-  config: InternalAxiosRequestConfig
+  config: InternalAxiosRequestConfig,
 ): Promise<InternalAxiosRequestConfig> => {
   config.headers.set("accept", "application/json")
   if (config.headers.get("Content-Type") !== "multipart/form-data") {
@@ -44,7 +44,7 @@ axios.interceptors.request.use(onRequest)
 class KleppVideoService {
   upload(
     file: File,
-    onUploadProgress: (event: AxiosProgressEvent) => void
+    onUploadProgress: (event: AxiosProgressEvent) => void,
   ): VideoResponse {
     const formData = new FormData()
     formData.append("file", file)
@@ -56,7 +56,7 @@ class KleppVideoService {
         // https://github.com/axios/axios/issues/4406 - Bug in current axios version
         transformRequest: formData => formData, // TODO: Remove when bug is fixed
         onUploadProgress,
-      }
+      },
     )
   }
 
@@ -64,19 +64,19 @@ class KleppVideoService {
     console.log(`${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`)
 
     return axios.get<KleppVideoFilesResponse>(
-      `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}${query}`,
     )
   }
 
   getUsers(): Promise<AxiosResponse<KleppUserResponse>> {
     return axios.get<KleppUserResponse>(
-      `${API_CONFIG.baseUrl}${API_CONFIG.usersPath}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.usersPath}`,
     )
   }
 
   getTags(): Promise<AxiosResponse<KleppVideoTagsResponse>> {
     return axios.get<KleppVideoTagsResponse>(
-      `${API_CONFIG.baseUrl}${API_CONFIG.tagsPath}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.tagsPath}`,
     )
   }
 
@@ -89,7 +89,7 @@ class KleppVideoService {
 
     return axios.delete<KleppVideoDeleteResponse>(
       `${API_CONFIG.baseUrl}${API_CONFIG.filesPath}`,
-      config
+      config,
     )
   }
 
@@ -101,7 +101,7 @@ class KleppVideoService {
 
     return axios.post<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      data
+      data,
     )
   }
 
@@ -116,7 +116,7 @@ class KleppVideoService {
 
     return axios.delete<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      config
+      config,
     )
   }
 
@@ -125,7 +125,7 @@ class KleppVideoService {
 
     return axios.patch<KleppVideoFile>(
       `${API_CONFIG.baseUrl}${pathComponent}`,
-      attrs
+      attrs,
     )
   }
 }
