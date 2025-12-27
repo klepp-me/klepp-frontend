@@ -10,8 +10,10 @@ import {
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined"
 import {
   Avatar,
+  Box,
   Card,
   CardContent,
+  IconButton,
   Stack,
   Tooltip,
   Typography,
@@ -130,22 +132,6 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     }
   }
 
-  function likeCounter() {
-    switch (likes.length) {
-      case 0:
-        return null
-      default:
-        return (
-          <Typography
-            variant='subtitle2'
-            sx={{ color: "#94a3b8", fontWeight: 500 }}
-            noWrap>
-            {likes.length}
-          </Typography>
-        )
-    }
-  }
-
   function tooltipLikes(shouldLike: boolean) {
     const numLikes = likes.length
     switch (true) {
@@ -171,56 +157,23 @@ function KleppVideoCard(props: KleppVideoCardProps) {
     window.location.assign(`${API_CONFIG.shareBaseUrl}?path=${props.file.path}`)
   }
 
-  function renderLike() {
-    if (userName && likes.map(user => user.name).indexOf(userName) !== -1) {
-      return (
-        <Stack
-          direction='row'
-          spacing={0.5}
-          justifyContent='flex-end'
-          alignItems='center'>
-          <Tooltip title={tooltipLikes(false)}>
-            <FavoriteOutlinedIcon
-              sx={{
-                "&:hover": {
-                  cursor: "pointer",
-                  color: "#34d399",
-                  transform: "scale(1.1)",
-                },
-                color: "#10b981",
-                transition: "all 0.2s ease",
-              }}
-              onClick={() => dislikeItem(props.file.path)}
-            />
-          </Tooltip>
-          {likeCounter()}
-        </Stack>
-      )
-    } else {
-      return (
-        <Stack
-          direction='row'
-          spacing={0.5}
-          justifyContent='flex-end'
-          alignItems='center'>
-          <Tooltip title={tooltipLikes(true)}>
-            <FavoriteBorderOutlined
-              sx={{
-                "&:hover": {
-                  cursor: "pointer",
-                  color: "#10b981",
-                  transform: "scale(1.1)",
-                },
-                color: "#94a3b8",
-                transition: "all 0.2s ease",
-              }}
-              onClick={() => likeItem(props.file.path)}
-            />
-          </Tooltip>
-          {likeCounter()}
-        </Stack>
-      )
-    }
+  const iconButtonStyle = {
+    width: 36,
+    height: 36,
+    bgcolor: "rgba(30, 41, 59, 0.6)",
+    backdropFilter: "blur(8px)",
+    border: "1px solid rgba(148, 163, 184, 0.1)",
+    "&:hover": {
+      bgcolor: "rgba(16, 185, 129, 0.15)",
+      borderColor: "rgba(16, 185, 129, 0.3)",
+    },
+    transition: "all 0.2s ease",
+  }
+
+  const iconStyle = {
+    fontSize: 18,
+    color: "#94a3b8",
+    transition: "all 0.2s ease",
   }
 
   return (
@@ -231,168 +184,198 @@ function KleppVideoCard(props: KleppVideoCardProps) {
         maxWidth: props.isExpanded ? "50%" : "none",
         margin: props.isExpanded ? "0 auto" : 0,
         transition: "all 0.3s ease",
+        bgcolor: "rgba(30, 41, 59, 0.5)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(148, 163, 184, 0.1)",
+        borderRadius: 3,
+        overflow: "hidden",
+        "&:hover": {
+          borderColor: "rgba(16, 185, 129, 0.2)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+        },
       }}>
       <KleppVideoPlayer
         embedUrl={props.file.uri}
         thumbnailUri={encodeURI(props.file.thumbnail_uri)}
         isExpanded={props.isExpanded}
       />
-      <CardContent>
-        <Stack
-          direction='row'
-          spacing={1.5}
-          justifyContent='flex-end'
-          alignItems='center'
-          sx={{ mb: 1.5 }}>
-          <Tooltip
-            title={props.isExpanded ? "Exit theater mode" : "Theater mode"}>
-            {props.isExpanded ? (
-              <CloseFullscreen
-                sx={{
-                  "&:hover": {
-                    cursor: "pointer",
-                    color: "#10b981",
-                    transform: "scale(1.1)",
-                  },
-                  color: "#94a3b8",
-                  transition: "all 0.2s ease",
-                  fontSize: 20,
-                  marginRight: "auto",
-                }}
-                onClick={props.onExpand}
-              />
-            ) : (
-              <OpenInFull
-                sx={{
-                  "&:hover": {
-                    cursor: "pointer",
-                    color: "#10b981",
-                    transform: "scale(1.1)",
-                  },
-                  color: "#94a3b8",
-                  transition: "all 0.2s ease",
-                  fontSize: 20,
-                  marginRight: "auto",
-                }}
-                onClick={props.onExpand}
-              />
-            )}
-          </Tooltip>
-          {props.canDelete && (
-            <Tooltip title='Delete video'>
-              <DeleteOutlined
-                sx={{
-                  "&:hover": {
-                    cursor: "pointer",
-                    color: "#ef4444",
-                    transform: "scale(1.1)",
-                  },
-                  color: "#94a3b8",
-                  transition: "all 0.2s ease",
-                  fontSize: 20,
-                }}
-                onClick={() => deleteItem(props.file.path)}
-              />
-            </Tooltip>
-          )}
-          {renderLike()}
-          <Tooltip title='Share video'>
-            <ShareOutlined
-              sx={{
-                "&:hover": {
-                  cursor: "pointer",
-                  color: "#10b981",
-                  transform: "scale(1.1)",
-                },
-                color: "#94a3b8",
-                transition: "all 0.2s ease",
-                fontSize: 20,
-              }}
-              onClick={() =>
-                copyToClipboard(
-                  `${API_CONFIG.shareBaseUrl}?path=${props.file.path}`,
-                )
-              }
-            />
-          </Tooltip>
-          {props.canHide && (
-            <Tooltip title={getVisibilityString(isHidden)}>
-              {!isHidden ? (
-                <VisibilityOff
-                  sx={{
-                    "&:hover": {
-                      cursor: "pointer",
-                      color: "#10b981",
-                      transform: "scale(1.1)",
-                    },
-                    color: "#94a3b8",
-                    transition: "all 0.2s ease",
-                    fontSize: 20,
-                  }}
-                  onClick={() =>
-                    toggleItemVisibility(isHidden, props.file.path)
-                  }
-                />
-              ) : (
-                <Visibility
-                  sx={{
-                    "&:hover": {
-                      cursor: "pointer",
-                      color: "#10b981",
-                      transform: "scale(1.1)",
-                    },
-                    color: "#94a3b8",
-                    transition: "all 0.2s ease",
-                    fontSize: 20,
-                  }}
-                  onClick={() =>
-                    toggleItemVisibility(isHidden, props.file.path)
-                  }
-                />
-              )}
-            </Tooltip>
-          )}
-        </Stack>
+      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+        {/* Title */}
         <Typography
           variant='body1'
           sx={{
             "&:hover": { cursor: "pointer", color: "#10b981" },
             color: "#f1f5f9",
-            fontWeight: 500,
+            fontWeight: 600,
+            fontSize: "1rem",
+            lineHeight: 1.4,
             transition: "color 0.2s ease",
+            mb: 1.5,
           }}
           noWrap
           onClick={() => openVideoClicked()}>
           {props.file.display_name}
         </Typography>
-        <Typography
-          variant='body2'
+
+        {/* User info row */}
+        <Stack
+          direction='row'
+          alignItems='center'
+          justifyContent='space-between'
+          sx={{ mb: 2 }}>
+          <Stack direction='row' alignItems='center' spacing={1}>
+            <Avatar
+              src={props.file.user.thumbnail_uri || undefined}
+              sx={{
+                width: 28,
+                height: 28,
+                bgcolor: props.file.user.thumbnail_uri
+                  ? "transparent"
+                  : "#1e293b",
+                fontSize: 12,
+                border: "2px solid rgba(16, 185, 129, 0.3)",
+              }}>
+              {!props.file.user.thumbnail_uri &&
+                props.file.user.name.charAt(0).toUpperCase()}
+            </Avatar>
+            <Box>
+              <Typography
+                variant='body2'
+                sx={{
+                  color: "#10b981",
+                  fontWeight: 500,
+                  fontSize: "0.875rem",
+                  lineHeight: 1.2,
+                }}>
+                {props.file.user.name}
+              </Typography>
+              <Typography
+                variant='caption'
+                sx={{ color: "#64748b", fontSize: "0.75rem" }}>
+                {props.datetime}
+              </Typography>
+            </Box>
+          </Stack>
+        </Stack>
+
+        {/* Action buttons */}
+        <Stack
+          direction='row'
+          spacing={1}
+          alignItems='center'
           sx={{
-            mt: 0.5,
-            color: "#10b981",
-            fontWeight: 500,
-            display: "flex",
-            alignItems: "center",
-            gap: 0.75,
+            pt: 1.5,
+            borderTop: "1px solid rgba(148, 163, 184, 0.1)",
           }}>
-          <Avatar
-            src={props.file.user.thumbnail_uri || undefined}
-            sx={{
-              width: 20,
-              height: 20,
-              bgcolor: props.file.user.thumbnail_uri
-                ? "transparent"
-                : "#1e293b",
-              fontSize: 10,
-            }}>
-            {!props.file.user.thumbnail_uri &&
-              props.file.user.name.charAt(0).toUpperCase()}
-          </Avatar>
-          {props.file.user.name}
-        </Typography>
-        <Typography variant='caption' sx={{ color: "#64748b" }}>
-          {props.datetime}
-        </Typography>
+          <Tooltip
+            title={props.isExpanded ? "Exit theater mode" : "Theater mode"}>
+            <IconButton onClick={props.onExpand} sx={iconButtonStyle}>
+              {props.isExpanded ? (
+                <CloseFullscreen sx={iconStyle} />
+              ) : (
+                <OpenInFull sx={iconStyle} />
+              )}
+            </IconButton>
+          </Tooltip>
+
+          {props.canDelete && (
+            <Tooltip title='Delete video'>
+              <IconButton
+                onClick={() => deleteItem(props.file.path)}
+                sx={{
+                  ...iconButtonStyle,
+                  "&:hover": {
+                    bgcolor: "rgba(239, 68, 68, 0.15)",
+                    borderColor: "rgba(239, 68, 68, 0.3)",
+                    "& .MuiSvgIcon-root": {
+                      color: "#ef4444",
+                    },
+                  },
+                }}>
+                <DeleteOutlined sx={iconStyle} />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Like button with count */}
+          <Tooltip
+            title={tooltipLikes(
+              !(
+                userName &&
+                likes.map(user => user.name).indexOf(userName) !== -1
+              ),
+            )}>
+            <IconButton
+              onClick={() =>
+                userName &&
+                likes.map(user => user.name).indexOf(userName) !== -1
+                  ? dislikeItem(props.file.path)
+                  : likeItem(props.file.path)
+              }
+              sx={{
+                ...iconButtonStyle,
+                gap: 0.5,
+                width: "auto",
+                px: 1.5,
+                "&:hover": {
+                  bgcolor: "rgba(16, 185, 129, 0.15)",
+                  borderColor: "rgba(16, 185, 129, 0.3)",
+                },
+              }}>
+              {userName &&
+              likes.map(user => user.name).indexOf(userName) !== -1 ? (
+                <FavoriteOutlinedIcon
+                  sx={{ ...iconStyle, color: "#10b981", fontSize: 18 }}
+                />
+              ) : (
+                <FavoriteBorderOutlined sx={iconStyle} />
+              )}
+              {likes.length > 0 && (
+                <Typography
+                  variant='caption'
+                  sx={{
+                    color:
+                      userName &&
+                      likes.map(user => user.name).indexOf(userName) !== -1
+                        ? "#10b981"
+                        : "#94a3b8",
+                    fontWeight: 600,
+                    fontSize: "0.75rem",
+                  }}>
+                  {likes.length}
+                </Typography>
+              )}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title='Share video'>
+            <IconButton
+              onClick={() =>
+                copyToClipboard(
+                  `${API_CONFIG.shareBaseUrl}?path=${props.file.path}`,
+                )
+              }
+              sx={iconButtonStyle}>
+              <ShareOutlined sx={iconStyle} />
+            </IconButton>
+          </Tooltip>
+
+          {props.canHide && (
+            <Tooltip title={getVisibilityString(isHidden)}>
+              <IconButton
+                onClick={() => toggleItemVisibility(isHidden, props.file.path)}
+                sx={iconButtonStyle}>
+                {!isHidden ? (
+                  <VisibilityOff sx={iconStyle} />
+                ) : (
+                  <Visibility sx={iconStyle} />
+                )}
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
       </CardContent>
     </Card>
   )
